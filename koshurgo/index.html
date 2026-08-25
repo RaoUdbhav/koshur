@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KoshurGo · کٲشُر لِنگو — Learn Kashmiri the Duolingo Way</title>
+  <meta name="description" content="Interactive Kashmiri language learning app with 3 Levels, 3 Paces, gamified exercises, spaced repetition, proverbs and dictionary.">
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- Top Persistent Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo-group" onclick="window.koshurGoApp.renderView('path')">
+        <span class="logo-icon">🍁</span>
+        <div>
+          <span class="logo-title">KoshurGo</span>
+          <small id="header-level-badge" style="display:block;font-size:10.5px;font-weight:700;color:var(--pine-main);letter-spacing:0.05em;text-transform:uppercase;">Scratch</small>
+        </div>
+      </div>
+
+      <!-- Gamification Counters -->
+      <div class="header-stats-row">
+        <span class="stat-pill" id="stat-streak" title="Daily Learning Streak">0 🔥</span>
+        <span class="stat-pill" id="stat-hearts" title="Energy / Hearts">5/5 ❤️</span>
+        <span class="stat-pill" id="stat-chinar" title="Chinar Leaves Currency">120 🍂</span>
+        <span class="stat-pill" id="stat-xp" title="Total Experience Points">0 XP</span>
+      </div>
+
+      <!-- Controls & Script Switcher -->
+      <div class="header-controls">
+        <select id="select-script" class="select-script-dropdown" title="Toggle Script">
+          <option value="roman" selected>🔤 Roman (Latin)</option>
+          <option value="dev">🕉️ Devanagari (कॉशुर)</option>
+          <option value="nastaliq">✍️ Nastaliq (کٲشُر)</option>
+        </select>
+        <button type="button" id="btn-sound-toggle" class="btn-icon-circle" title="Toggle Sound">🔊</button>
+        <a href="../learnkoshur_site/index.html" class="btn-icon-circle" title="Classic Reference Archive" style="text-decoration:none;">📚</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dynamic View Container -->
+  <main class="app-body" id="main-content-view">
+    <!-- Populated by app.js -->
+  </main>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="app-nav">
+    <button type="button" class="nav-item active" data-route="path">
+      <span class="nav-icon">🌲</span>
+      <span>Learn</span>
+    </button>
+    <button type="button" class="nav-item" data-route="dictionary">
+      <span class="nav-icon">📖</span>
+      <span>Dictionary</span>
+    </button>
+    <button type="button" class="nav-item" data-route="proverbs">
+      <span class="nav-icon">📜</span>
+      <span>Proverbs</span>
+    </button>
+    <button type="button" class="nav-item" data-route="flashcards">
+      <span class="nav-icon">🗂️</span>
+      <span>Cards</span>
+    </button>
+    <button type="button" class="nav-item" data-route="speedMatch">
+      <span class="nav-icon">⚡</span>
+      <span>Arena</span>
+    </button>
+    <button type="button" class="nav-item" data-route="bazaar">
+      <span class="nav-icon">🍂</span>
+      <span>Bazaar</span>
+    </button>
+    <button type="button" class="nav-item" data-route="profile">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- App Scripts -->
+  <script src="./js/audio.js"></script>
+  <script src="./js/gamification.js"></script>
+  <script src="./js/srs.js"></script>
+  <script src="./js/curriculum.js"></script>
+  <script src="./js/exercises.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
