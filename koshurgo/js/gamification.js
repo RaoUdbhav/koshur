@@ -1,7 +1,7 @@
 /**
  * KoshurGo Gamification & Retention Engine
  * Manages Streaks (🔥), Hearts (❤️), XP, Chinar Leaves Currency (🍂), Badges,
- * with state validation, sanitization, and cloud-sync readiness.
+ * with state validation, sanitization, and automatic Firestore cloud sync.
  */
 
 class KoshurGamification {
@@ -15,6 +15,8 @@ class KoshurGamification {
     return {
       userId: null,
       userEmail: null,
+      userDisplayName: null,
+      userPhotoURL: null,
       isLoggedIn: false,
       syncedAt: null,
       xp: 0,
@@ -82,6 +84,10 @@ class KoshurGamification {
   saveState() {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(this.state));
+      // Auto-sync with Firestore cloud if user is logged in
+      if (window.koshurAuth && typeof window.koshurAuth.pushStateUpdate === 'function') {
+        window.koshurAuth.pushStateUpdate();
+      }
     } catch (e) {
       console.warn('Could not save state', e);
     }
@@ -107,7 +113,7 @@ class KoshurGamification {
       this.state.todayXP = 0;
 
       if (diffDays === 1) {
-        // Streak is continuous
+        // Streak continues
       } else if (diffDays === 2 && this.state.streakFreezes > 0) {
         // Saved by streak freeze
         this.state.streakFreezes -= 1;

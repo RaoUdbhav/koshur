@@ -25,5 +25,5 @@
     # Enforce HTTPS strictly
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     
-    # Robust Content Security Policy (allows self-hosted scripts, styles, audio, and secure fonts)
-    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+    # Content Security Policy with Firebase & Google Auth permissions
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https: https://lh3.googleusercontent.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://*.firebaseio.com; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self';"

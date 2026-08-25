@@ -1,9 +1,8 @@
 /**
  * KoshurGo Main Application Controller
- * Handles routing, view transitions, data loading, script switching, and DOM security.
+ * Handles routing, view transitions, data loading, script switching, and Firebase Auth UI.
  */
 
-// Utility: HTML Sanitizer to prevent XSS injection
 function escapeHTML(str) {
   if (!str) return '';
   return String(str)
@@ -26,6 +25,7 @@ class KoshurGoApp {
     this.speedTimer = null;
     this.speedTimeLeft = 60;
     this.speedScore = 0;
+    this.authMode = 'signin'; // 'signin' or 'signup'
   }
 
   async init() {
@@ -33,6 +33,7 @@ class KoshurGoApp {
     this.bindHeaderEvents();
     this.bindNavigationEvents();
     this.bindGlobalDelegatedEvents();
+    this.bindAuthModalEvents();
     this.updateHeaderStats();
     this.renderView('path');
   }
@@ -63,6 +64,7 @@ class KoshurGoApp {
     const xpEl = document.getElementById('stat-xp');
     const scriptSelect = document.getElementById('select-script');
     const levelBadge = document.getElementById('header-level-badge');
+    const authBtn = document.getElementById('btn-header-auth');
 
     if (streakEl) streakEl.textContent = `${gm.state.streak} 🔥`;
     if (heartsEl) heartsEl.textContent = `${gm.state.hearts}/${gm.state.maxHearts} ❤️`;
@@ -72,6 +74,16 @@ class KoshurGoApp {
     if (levelBadge) {
       const lvl = window.KOSHUR_CURRICULUM.levels[gm.state.selectedLevel];
       levelBadge.textContent = lvl ? lvl.title : 'Scratch';
+    }
+
+    if (authBtn) {
+      if (gm.state.isLoggedIn) {
+        authBtn.innerHTML = `☁️ ${escapeHTML(gm.state.userDisplayName || 'Account')}`;
+        authBtn.classList.add('btn-auth-logged');
+      } else {
+        authBtn.innerHTML = `👤 Sign In`;
+        authBtn.classList.remove('btn-auth-logged');
+      }
     }
   }
 
@@ -92,6 +104,17 @@ class KoshurGoApp {
         soundToggle.textContent = window.koshurAudio.soundEnabled ? '🔊' : '🔇';
       });
     }
+
+    const authBtn = document.getElementById('btn-header-auth');
+    if (authBtn) {
+      authBtn.addEventListener('click', () => {
+        if (window.koshurGamification.state.isLoggedIn) {
+          this.renderView('profile');
+        } else {
+          this.openAuthModal();
+        }
+      });
+    }
   }
 
   bindNavigationEvents() {
@@ -106,7 +129,6 @@ class KoshurGoApp {
   }
 
   bindGlobalDelegatedEvents() {
-    // Event delegation for audio speak buttons to eliminate inline onclick XSS vectors
     document.addEventListener('click', (e) => {
       const speakBtn = e.target.closest('[data-speak]');
       if (speakBtn) {
@@ -120,11 +142,78 @@ class KoshurGoApp {
     });
   }
 
+  // ==========================================
+  // AUTH MODAL & CLOUD SYNC LOGIC
+  // ==========================================
+  bindAuthModalEvents() {
+    const googleBtn = document.getElementById('btn-google-auth');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', async () => {
+        if (window.koshurAuth) {
+          await window.koshurAuth.loginWithGoogle();
+          this.closeAuthModal();
+        }
+      });
+    }
+
+    const toggleModeBtn = document.getElementById('btn-toggle-auth-mode');
+    if (toggleModeBtn) {
+      toggleModeBtn.addEventListener('click', () => {
+        this.authMode = (this.authMode === 'signin') ? 'signup' : 'signin';
+        const submitBtn = document.getElementById('btn-submit-auth');
+        const modeText = document.getElementById('auth-mode-text');
+        if (this.authMode === 'signup') {
+          submitBtn.textContent = 'Create Account';
+          modeText.textContent = 'Already have an account?';
+          toggleModeBtn.textContent = 'Sign In';
+        } else {
+          submitBtn.textContent = 'Sign In';
+          modeText.textContent = "Don't have an account?";
+          toggleModeBtn.textContent = 'Create Free Account';
+        }
+      });
+    }
+
+    const emailForm = document.getElementById('email-auth-form');
+    if (emailForm) {
+      emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        const errorEl = document.getElementById('auth-error-msg');
+        errorEl.textContent = 'Authenticating...';
+
+        let res;
+        if (this.authMode === 'signup') {
+          res = await window.koshurAuth.signUpWithEmail(email, password);
+        } else {
+          res = await window.koshurAuth.loginWithEmail(email, password);
+        }
+
+        if (res && res.success) {
+          errorEl.textContent = '';
+          this.closeAuthModal();
+        } else {
+          errorEl.textContent = res ? res.error : 'Authentication failed';
+        }
+      });
+    }
+  }
+
+  openAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
   renderView(viewName) {
     this.currentView = viewName;
     this.updateHeaderStats();
 
-    // Update active state in nav
     document.querySelectorAll('[data-route]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.route === viewName);
     });
@@ -197,7 +286,7 @@ class KoshurGoApp {
 
         <!-- Path Units Stepper -->
         <div class="units-tree">
-          ${currentLevel.units.map((unit, uIdx) => {
+          ${currentLevel.units.map((unit) => {
             return `
               <div class="unit-card unit-unlocked">
                 <div class="unit-banner" style="background: linear-gradient(135deg, ${unit.color || currentLevel.color}, ${unit.accent || currentLevel.accent});">
@@ -232,7 +321,6 @@ class KoshurGoApp {
       </div>
     `;
 
-    // Level tab clicks
     container.querySelectorAll('.tab-level').forEach(btn => {
       btn.addEventListener('click', () => {
         gm.state.selectedLevel = btn.dataset.level;
@@ -242,7 +330,6 @@ class KoshurGoApp {
       });
     });
 
-    // Lesson node clicks
     container.querySelectorAll('.path-node-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const lessonId = btn.dataset.lessonId;
@@ -293,7 +380,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: DICTIONARY (93 HAND-CHECKED ENTRIES)
+  // VIEW: DICTIONARY
   // ==========================================
   renderDictionaryView(container) {
     const script = window.koshurGamification.state.scriptMode || 'roman';
@@ -374,7 +461,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: PROVERBS (1,330 OMKAR KOUL PROVERBS)
+  // VIEW: PROVERBS
   // ==========================================
   renderProverbsView(container) {
     const script = window.koshurGamification.state.scriptMode || 'roman';
@@ -425,7 +512,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: FLASHCARDS (LEITNER 5-BOX SRS)
+  // VIEW: FLASHCARDS
   // ==========================================
   renderFlashcardsView(container) {
     if (this.vocabulary.length === 0) {
@@ -446,7 +533,6 @@ class KoshurGoApp {
 
         <div class="flashcard-scene" id="flashcard-card-elem">
           <div class="flashcard-inner ${this.flashcardFlipped ? 'is-flipped' : ''}">
-            <!-- Front -->
             <div class="flashcard-face flashcard-front">
               <span class="flashcard-tag">${escapeHTML(currentWord.category || 'General')}</span>
               <h3 class="flashcard-word ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(mainKoshur)}</h3>
@@ -454,7 +540,6 @@ class KoshurGoApp {
               <button type="button" class="btn-audio-sm" data-speak="${escapeHTML(currentWord.roman)}">🔊 Listen</button>
               <small class="flip-hint">Tap card to reveal English</small>
             </div>
-            <!-- Back -->
             <div class="flashcard-face flashcard-back">
               <h3 class="flashcard-word">${escapeHTML(currentWord.en)}</h3>
               ${currentWord.exampleEn ? `
@@ -502,7 +587,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: SPEED MATCH ARENA (60s CHALLENGE)
+  // VIEW: SPEED MATCH ARENA
   // ==========================================
   renderSpeedMatchView(container) {
     container.innerHTML = `
@@ -639,7 +724,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: PRACTICE MISTAKES (HEARTS REFILL)
+  // VIEW: PRACTICE MISTAKES
   // ==========================================
   renderMistakesView(container) {
     const gm = window.koshurGamification;
@@ -706,7 +791,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: CHINAR BAZAAR (IN-APP STORE)
+  // VIEW: CHINAR BAZAAR
   // ==========================================
   renderBazaarView(container) {
     const gm = window.koshurGamification;
@@ -719,7 +804,6 @@ class KoshurGoApp {
         </header>
 
         <div class="bazaar-grid">
-          <!-- Item 1: Streak Freeze -->
           <div class="bazaar-card">
             <div class="bazaar-icon">🧊</div>
             <h3>Streak Freeze</h3>
@@ -730,7 +814,6 @@ class KoshurGoApp {
             </button>
           </div>
 
-          <!-- Item 2: Full Heart Refill -->
           <div class="bazaar-card">
             <div class="bazaar-icon">❤️</div>
             <h3>Heart Refill</h3>
@@ -769,22 +852,44 @@ class KoshurGoApp {
   renderProfileView(container) {
     const gm = window.koshurGamification;
     const rank = gm.getLevelRankTitle(gm.state.xp);
+    const isLoggedIn = gm.state.isLoggedIn;
 
     container.innerHTML = `
       <div class="profile-container animate-fade-in">
+        <!-- Account Card -->
         <div class="profile-header-card">
           <div class="avatar-circle">${rank.icon}</div>
           <div class="profile-info">
-            <h2>Koshur Learner</h2>
+            <h2>${escapeHTML(gm.state.userDisplayName || 'Koshur Learner')}</h2>
             <p class="rank-title">${escapeHTML(rank.title)} (Rank ${rank.rank})</p>
             <div class="profile-stats-row">
               <span>🔥 ${gm.state.streak} Day Streak</span>
               <span>⚡ ${gm.state.xp} Total XP</span>
-              <span>🍂 ${gm.state.chinarLeaves} Chinar Leaves</span>
+              <span>🍂 ${gm.state.chinarLeaves} Leaves</span>
             </div>
           </div>
         </div>
 
+        <!-- Cloud Sync & Account Status Card -->
+        <div class="settings-group-card">
+          <h3>Cloud Sync & Account</h3>
+          <div class="cloud-sync-status-box">
+            <div class="cloud-status-left">
+              <span class="cloud-indicator-icon">${isLoggedIn ? '☁️' : '💾'}</span>
+              <div>
+                <strong>${isLoggedIn ? 'Cloud Sync Active' : 'Local Guest Mode'}</strong>
+                <small>${isLoggedIn ? `Logged in as ${escapeHTML(gm.state.userEmail)}` : 'Progress is currently saved locally on this browser.'}</small>
+              </div>
+            </div>
+            ${isLoggedIn ? `
+              <button type="button" id="btn-profile-logout" class="btn-duo btn-danger" style="padding:8px 16px;font-size:13px;">Sign Out</button>
+            ` : `
+              <button type="button" id="btn-profile-login" class="btn-duo btn-primary" style="padding:8px 16px;font-size:13px;">Sign In to Sync</button>
+            `}
+          </div>
+        </div>
+
+        <!-- Pacing & Daily Goal -->
         <div class="settings-group-card">
           <h3>Pacing & Goals</h3>
           <div class="pace-options">
@@ -800,6 +905,7 @@ class KoshurGoApp {
           </div>
         </div>
 
+        <!-- Badges Gallery -->
         <div class="badges-gallery-card">
           <h3>Kashmiri Badges</h3>
           <div class="badges-grid">
@@ -814,13 +920,29 @@ class KoshurGoApp {
           </div>
         </div>
 
+        <!-- Provenance -->
         <div class="provenance-card">
           <h3>About KoshurGo & Provenance</h3>
-          <p>Dictionary verified from Kashmiri seed sets. Proverbs sourced from <em>A Dictionary of Kashmiri Proverbs</em> by Omkar N. Koul. Audio synthesized using Web Audio & phonetic models.</p>
+          <p>Dictionary verified from curated Kashmiri seed sets. Proverbs sourced from <em>A Dictionary of Kashmiri Proverbs</em> by Omkar N. Koul. Audio synthesized using Web Audio & phonetic speech models.</p>
           <a href="../learnkoshur_site/index.html" class="link-legacy">Switch to Classic Reference Archive &raquo;</a>
         </div>
       </div>
     `;
+
+    const loginBtn = document.getElementById('btn-profile-login');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', () => this.openAuthModal());
+    }
+
+    const logoutBtn = document.getElementById('btn-profile-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        if (confirm('Sign out from KoshurGo?')) {
+          await window.koshurAuth.logout();
+          this.renderProfileView(container);
+        }
+      });
+    }
 
     container.querySelectorAll('input[name="user-pace"]').forEach(radio => {
       radio.addEventListener('change', (e) => {

@@ -57,6 +57,7 @@ learnkoshur/
     │   ├── curriculum.js           # 3 Levels × 3 Paces lesson trees
     │   ├── exercises.js            # 6 interactive game archetypes
     │   ├── gamification.js         # Streaks, Hearts, XP, Chinar Leaves, Badges
+    │   ├── firebase-auth.js        # Firebase Auth & Firestore cloud state sync
     │   ├── srs.js                  # Spaced repetition & Mistake review
     │   └── app.js                  # Main controller & view routing
     └── data/
@@ -66,16 +67,38 @@ learnkoshur/
 
 ---
 
+## 🔒 Firebase Authentication & Cloud Sync
+
+KoshurGo supports seamless multi-device progress synchronization using **Firebase Authentication & Firestore**:
+- **Guest / Offline Mode**: Start practicing immediately without signing in (persists in `localStorage`).
+- **1-Click Google Sign-In & Email Auth**: Upon sign-in, local guest progress (XP, streaks, unlocked lessons, Chinar Leaves) is automatically merged with your cloud account.
+- **Real-Time Cross-Device Sync**: Progress made on your phone reflects instantly on your desktop.
+
+### Connecting Your Own Firebase Project:
+1. Create a project on [Firebase Console](https://console.firebase.google.com).
+2. Enable **Authentication** (Google Provider & Email/Password Provider).
+3. Enable **Cloud Firestore** in test or production mode.
+4. Replace the credentials in [`koshurgo/js/firebase-auth.js`](file:///c:/Users/raoud/OneDrive/Desktop/learnkoshur/koshurgo/js/firebase-auth.js):
+   ```javascript
+   const firebaseConfig = {
+     apiKey: "YOUR_FIREBASE_API_KEY",
+     authDomain: "your-project.firebaseapp.com",
+     projectId: "your-project-id",
+     storageBucket: "your-project.appspot.com",
+     messagingSenderId: "1234567890",
+     appId: "1:1234567890:web:abcdef"
+   };
+   ```
+
+---
+
 ## 🚀 How to Deploy on Netlify with Git
 
 1. **Push to GitHub**:
    ```bash
-   git init
    git add .
-   git commit -m "feat: launch KoshurGo interactive Kashmiri learning platform"
-   git branch -M main
-   git remote add origin https://github.com/RaoUdbhav/koshur.git
-   git push -u origin main
+   git commit -m "feat: complete Firebase Auth and cloud sync integration"
+   git push origin main
    ```
 
 2. **Connect to Netlify**:
