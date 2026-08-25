@@ -1,7 +1,18 @@
 /**
  * KoshurGo Main Application Controller
- * Handles routing, view transitions, data loading, and script switching.
+ * Handles routing, view transitions, data loading, script switching, and DOM security.
  */
+
+// Utility: HTML Sanitizer to prevent XSS injection
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 class KoshurGoApp {
   constructor() {
@@ -21,6 +32,7 @@ class KoshurGoApp {
     await this.loadDatasets();
     this.bindHeaderEvents();
     this.bindNavigationEvents();
+    this.bindGlobalDelegatedEvents();
     this.updateHeaderStats();
     this.renderView('path');
   }
@@ -93,6 +105,21 @@ class KoshurGoApp {
     });
   }
 
+  bindGlobalDelegatedEvents() {
+    // Event delegation for audio speak buttons to eliminate inline onclick XSS vectors
+    document.addEventListener('click', (e) => {
+      const speakBtn = e.target.closest('[data-speak]');
+      if (speakBtn) {
+        e.preventDefault();
+        const text = speakBtn.getAttribute('data-speak');
+        const isSlow = speakBtn.getAttribute('data-slow') === 'true';
+        if (text && window.koshurAudio) {
+          window.koshurAudio.speakText(text, isSlow);
+        }
+      }
+    });
+  }
+
   renderView(viewName) {
     this.currentView = viewName;
     this.updateHeaderStats();
@@ -150,16 +177,16 @@ class KoshurGoApp {
         <div class="level-pace-bar">
           <div class="level-selector-tabs">
             ${Object.values(window.KOSHUR_CURRICULUM.levels).map(lvl => `
-              <button type="button" class="tab-level ${lvl.id === gm.state.selectedLevel ? 'active-level' : ''}" data-level="${lvl.id}">
-                <span>${lvl.title}</span>
-                <small>${script === 'nastaliq' ? lvl.nastaliq : script === 'dev' ? lvl.dev : lvl.subTitle.split('·')[0]}</small>
+              <button type="button" class="tab-level ${lvl.id === gm.state.selectedLevel ? 'active-level' : ''}" data-level="${escapeHTML(lvl.id)}">
+                <span>${escapeHTML(lvl.title)}</span>
+                <small>${escapeHTML(script === 'nastaliq' ? lvl.nastaliq : script === 'dev' ? lvl.dev : lvl.subTitle.split('·')[0])}</small>
               </button>
             `).join('')}
           </div>
 
           <div class="pace-indicator-card">
             <div class="pace-info">
-              <span class="pace-label">Daily Pace: <strong>${currentPace.name}</strong></span>
+              <span class="pace-label">Daily Pace: <strong>${escapeHTML(currentPace.name)}</strong></span>
               <span class="pace-xp-target">Goal: ${gm.state.todayXP || 0} / ${currentPace.dailyGoalXP} XP</span>
             </div>
             <div class="daily-progress-bar-bg">
@@ -171,15 +198,14 @@ class KoshurGoApp {
         <!-- Path Units Stepper -->
         <div class="units-tree">
           ${currentLevel.units.map((unit, uIdx) => {
-            const isUnlocked = true; // All units visible in level
             return `
-              <div class="unit-card ${isUnlocked ? 'unit-unlocked' : 'unit-locked'}">
-                <div class="unit-banner" style="background: linear-gradient(135deg, ${currentLevel.color}, ${currentLevel.accent});">
+              <div class="unit-card unit-unlocked">
+                <div class="unit-banner" style="background: linear-gradient(135deg, ${unit.color || currentLevel.color}, ${unit.accent || currentLevel.accent});">
                   <div class="unit-title-group">
                     <span class="unit-icon">${unit.icon}</span>
                     <div>
-                      <h3 class="unit-name">${unit.title}</h3>
-                      <p class="unit-desc">${unit.description}</p>
+                      <h3 class="unit-name">${escapeHTML(unit.title)}</h3>
+                      <p class="unit-desc">${escapeHTML(unit.description)}</p>
                     </div>
                   </div>
                   <span class="unit-count">${unit.lessons.length} Lessons</span>
@@ -190,11 +216,11 @@ class KoshurGoApp {
                     const isDone = gm.state.completedLessons[lesson.id];
                     return `
                       <div class="node-wrapper node-offset-${(lIdx % 3)}">
-                        <button type="button" class="path-node-btn ${isDone ? 'node-done' : 'node-active'}" data-lesson-id="${lesson.id}">
+                        <button type="button" class="path-node-btn ${isDone ? 'node-done' : 'node-active'}" data-lesson-id="${escapeHTML(lesson.id)}">
                           <span class="node-icon">${isDone ? '⭐' : '📖'}</span>
                           <span class="node-xp">+${lesson.xp} XP</span>
                         </button>
-                        <span class="node-label">${lesson.title}</span>
+                        <span class="node-label">${escapeHTML(lesson.title)}</span>
                       </div>
                     `;
                   }).join('')}
@@ -292,12 +318,12 @@ class KoshurGoApp {
 
         <div class="filter-controls">
           <div class="search-box">
-            <input type="text" id="dict-search-input" placeholder="Search in English, Roman, Devanagari, or Nastaliq..." value="${this.searchQuery}">
+            <input type="text" id="dict-search-input" placeholder="Search in English, Roman, Devanagari, or Nastaliq..." value="${escapeHTML(this.searchQuery)}">
           </div>
           <div class="category-pills">
             ${categories.map(c => `
-              <button type="button" class="pill-btn ${c === this.selectedCategory ? 'pill-active' : ''}" data-cat="${c}">
-                ${c}
+              <button type="button" class="pill-btn ${c === this.selectedCategory ? 'pill-active' : ''}" data-cat="${escapeHTML(c)}">
+                ${escapeHTML(c)}
               </button>
             `).join('')}
           </div>
@@ -310,18 +336,18 @@ class KoshurGoApp {
               <div class="dict-card">
                 <div class="dict-card-top">
                   <div class="dict-koshur-group">
-                    <span class="dict-koshur-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${mainText}</span>
-                    <button type="button" class="btn-audio-mini" onclick="window.koshurAudio.speakText('${entry.roman}')" title="Pronounce">🔊</button>
+                    <span class="dict-koshur-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(mainText)}</span>
+                    <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(entry.roman)}" title="Pronounce">🔊</button>
                   </div>
-                  <span class="dict-category-tag">${entry.category || 'General'}</span>
+                  <span class="dict-category-tag">${escapeHTML(entry.category || 'General')}</span>
                 </div>
-                <div class="dict-roman-phonetic">${entry.roman}</div>
-                <div class="dict-english">${entry.en}</div>
+                <div class="dict-roman-phonetic">${escapeHTML(entry.roman)}</div>
+                <div class="dict-english">${escapeHTML(entry.en)}</div>
 
                 ${entry.exampleEn ? `
                   <div class="dict-example-box">
-                    <p class="dict-ex-koshur">${script === 'nastaliq' ? entry.exampleNastaliq : script === 'dev' ? entry.exampleDev : entry.exampleRoman}</p>
-                    <p class="dict-ex-en">"${entry.exampleEn}"</p>
+                    <p class="dict-ex-koshur">${escapeHTML(script === 'nastaliq' ? entry.exampleNastaliq : script === 'dev' ? entry.exampleDev : entry.exampleRoman)}</p>
+                    <p class="dict-ex-en">"${escapeHTML(entry.exampleEn)}"</p>
                   </div>
                 ` : ''}
               </div>
@@ -359,7 +385,7 @@ class KoshurGoApp {
         (p.literal && p.literal.toLowerCase().includes(q)) ||
         (p.meaning && p.meaning.toLowerCase().includes(q)) ||
         (p.dev && p.dev.includes(q));
-    }).slice(0, 80); // Slice first 80 for fast rendering
+    }).slice(0, 80);
 
     container.innerHTML = `
       <div class="proverbs-container animate-fade-in">
@@ -369,7 +395,7 @@ class KoshurGoApp {
         </header>
 
         <div class="search-box">
-          <input type="text" id="prov-search-input" placeholder="Search proverbs by meaning, keyword, or Kashmiri..." value="${this.searchQuery}">
+          <input type="text" id="prov-search-input" placeholder="Search proverbs by meaning, keyword, or Kashmiri..." value="${escapeHTML(this.searchQuery)}">
         </div>
 
         <div class="proverbs-list">
@@ -377,11 +403,11 @@ class KoshurGoApp {
             <div class="proverb-card">
               <div class="prov-header">
                 <span class="prov-num">#${idx + 1}</span>
-                <button type="button" class="btn-audio-mini" onclick="window.koshurAudio.speakText('${p.roman}')" title="Listen">🔊</button>
+                <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(p.roman)}" title="Listen">🔊</button>
               </div>
-              <div class="prov-koshur-text">${script === 'dev' && p.dev ? p.dev : p.roman}</div>
-              <div class="prov-literal"><strong>Literal:</strong> "${p.literal || p.meaning}"</div>
-              ${p.meaning ? `<div class="prov-meaning"><strong>Meaning:</strong> ${p.meaning}</div>` : ''}
+              <div class="prov-koshur-text">${escapeHTML(script === 'dev' && p.dev ? p.dev : p.roman)}</div>
+              <div class="prov-literal"><strong>Literal:</strong> "${escapeHTML(p.literal || p.meaning)}"</div>
+              ${p.meaning ? `<div class="prov-meaning"><strong>Meaning:</strong> ${escapeHTML(p.meaning)}</div>` : ''}
               <div class="prov-citation">Page ${p.page || 1} · Source: Omkar N. Koul (2006)</div>
             </div>
           `).join('')}
@@ -422,18 +448,18 @@ class KoshurGoApp {
           <div class="flashcard-inner ${this.flashcardFlipped ? 'is-flipped' : ''}">
             <!-- Front -->
             <div class="flashcard-face flashcard-front">
-              <span class="flashcard-tag">${currentWord.category || 'General'}</span>
-              <h3 class="flashcard-word ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${mainKoshur}</h3>
-              <p class="flashcard-sub">${currentWord.roman}</p>
-              <button type="button" class="btn-audio-sm" onclick="window.koshurAudio.speakText('${currentWord.roman}')">🔊 Listen</button>
+              <span class="flashcard-tag">${escapeHTML(currentWord.category || 'General')}</span>
+              <h3 class="flashcard-word ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(mainKoshur)}</h3>
+              <p class="flashcard-sub">${escapeHTML(currentWord.roman)}</p>
+              <button type="button" class="btn-audio-sm" data-speak="${escapeHTML(currentWord.roman)}">🔊 Listen</button>
               <small class="flip-hint">Tap card to reveal English</small>
             </div>
             <!-- Back -->
             <div class="flashcard-face flashcard-back">
-              <h3 class="flashcard-word">${currentWord.en}</h3>
+              <h3 class="flashcard-word">${escapeHTML(currentWord.en)}</h3>
               ${currentWord.exampleEn ? `
-                <p class="flashcard-example">"${currentWord.exampleEn}"</p>
-                <small class="flashcard-example-koshur">${currentWord.exampleRoman}</small>
+                <p class="flashcard-example">"${escapeHTML(currentWord.exampleEn)}"</p>
+                <small class="flashcard-example-koshur">${escapeHTML(currentWord.exampleRoman)}</small>
               ` : ''}
               <small class="flip-hint">Tap card to flip back</small>
             </div>
@@ -449,7 +475,8 @@ class KoshurGoApp {
 
     const cardElem = document.getElementById('flashcard-card-elem');
     if (cardElem) {
-      cardElem.addEventListener('click', () => {
+      cardElem.addEventListener('click', (e) => {
+        if (e.target.closest('[data-speak]')) return;
         window.koshurAudio.playTap();
         this.flashcardFlipped = !this.flashcardFlipped;
         this.renderFlashcardsView(container);
@@ -535,10 +562,10 @@ class KoshurGoApp {
     board.innerHTML = `
       <div class="match-arena">
         <div class="match-col">
-          ${left.map(w => `<button type="button" class="match-btn sp-left" data-en="${w.en}">${w.en}</button>`).join('')}
+          ${left.map(w => `<button type="button" class="match-btn sp-left" data-en="${escapeHTML(w.en)}">${escapeHTML(w.en)}</button>`).join('')}
         </div>
         <div class="match-col">
-          ${right.map(w => `<button type="button" class="match-btn sp-right" data-en="${w.en}">${w.roman}</button>`).join('')}
+          ${right.map(w => `<button type="button" class="match-btn sp-right" data-en="${escapeHTML(w.en)}">${escapeHTML(w.roman)}</button>`).join('')}
         </div>
       </div>
     `;
@@ -749,7 +776,7 @@ class KoshurGoApp {
           <div class="avatar-circle">${rank.icon}</div>
           <div class="profile-info">
             <h2>Koshur Learner</h2>
-            <p class="rank-title">${rank.title} (Rank ${rank.rank})</p>
+            <p class="rank-title">${escapeHTML(rank.title)} (Rank ${rank.rank})</p>
             <div class="profile-stats-row">
               <span>🔥 ${gm.state.streak} Day Streak</span>
               <span>⚡ ${gm.state.xp} Total XP</span>
@@ -763,10 +790,10 @@ class KoshurGoApp {
           <div class="pace-options">
             ${Object.values(window.KOSHUR_CURRICULUM.paces).map(p => `
               <label class="pace-radio-label ${p.id === gm.state.selectedPace ? 'selected-pace' : ''}">
-                <input type="radio" name="user-pace" value="${p.id}" ${p.id === gm.state.selectedPace ? 'checked' : ''}>
+                <input type="radio" name="user-pace" value="${escapeHTML(p.id)}" ${p.id === gm.state.selectedPace ? 'checked' : ''}>
                 <div>
-                  <strong>${p.name}</strong>
-                  <small>${p.tagline}</small>
+                  <strong>${escapeHTML(p.name)}</strong>
+                  <small>${escapeHTML(p.tagline)}</small>
                 </div>
               </label>
             `).join('')}
@@ -779,8 +806,8 @@ class KoshurGoApp {
             ${Object.values(gm.state.badges).map(b => `
               <div class="badge-card ${b.unlocked ? 'badge-unlocked' : 'badge-locked'}">
                 <span class="badge-icon">${b.icon}</span>
-                <h4>${b.title}</h4>
-                <p>${b.desc}</p>
+                <h4>${escapeHTML(b.title)}</h4>
+                <p>${escapeHTML(b.desc)}</p>
                 <small class="badge-status">${b.unlocked ? 'Unlocked 🌟' : 'In Progress'}</small>
               </div>
             `).join('')}

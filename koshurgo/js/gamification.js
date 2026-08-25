@@ -1,6 +1,7 @@
 /**
  * KoshurGo Gamification & Retention Engine
- * Manages Streaks (🔥), Hearts (❤️), XP, Chinar Leaves Currency (🍂), Badges & Bazaar.
+ * Manages Streaks (🔥), Hearts (❤️), XP, Chinar Leaves Currency (🍂), Badges,
+ * with state validation, sanitization, and cloud-sync readiness.
  */
 
 class KoshurGamification {
@@ -12,6 +13,10 @@ class KoshurGamification {
 
   getDefaultState() {
     return {
+      userId: null,
+      userEmail: null,
+      isLoggedIn: false,
+      syncedAt: null,
       xp: 0,
       todayXP: 0,
       lastActiveDate: null,
@@ -20,10 +25,10 @@ class KoshurGamification {
       maxHearts: 5,
       hearts: 5,
       lastHeartDepletedTime: null,
-      chinarLeaves: 120, // Start with welcome gift
+      chinarLeaves: 120,
       selectedLevel: 'scratch',
       selectedPace: 'go',
-      scriptMode: 'roman', // 'roman', 'dev', 'nastaliq'
+      scriptMode: 'roman',
       showPhoneticSubtitles: true,
       completedLessons: {},
       unlockedUnits: ['u1', 'u5', 'u8'],
@@ -44,7 +49,29 @@ class KoshurGamification {
     try {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
-        return { ...this.getDefaultState(), ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          const merged = { ...this.getDefaultState(), ...parsed };
+
+          // Defensive Type & Bounds Validation
+          merged.xp = Math.max(0, parseInt(merged.xp, 10) || 0);
+          merged.todayXP = Math.max(0, parseInt(merged.todayXP, 10) || 0);
+          merged.streak = Math.max(0, parseInt(merged.streak, 10) || 0);
+          merged.streakFreezes = Math.max(0, parseInt(merged.streakFreezes, 10) || 0);
+          merged.maxHearts = 5;
+          merged.hearts = Math.min(5, Math.max(0, parseInt(merged.hearts, 10) || 5));
+          merged.chinarLeaves = Math.max(0, parseInt(merged.chinarLeaves, 10) || 0);
+          if (!['scratch', 'basic', 'intense'].includes(merged.selectedLevel)) {
+            merged.selectedLevel = 'scratch';
+          }
+          if (!['easy', 'go', 'intense'].includes(merged.selectedPace)) {
+            merged.selectedPace = 'go';
+          }
+          if (!['roman', 'dev', 'nastaliq'].includes(merged.scriptMode)) {
+            merged.scriptMode = 'roman';
+          }
+          return merged;
+        }
       }
     } catch (e) {
       console.warn('Could not read state from localStorage', e);
@@ -72,22 +99,20 @@ class KoshurGamification {
     if (!lastActive) return;
 
     if (lastActive !== today) {
-      // Check if it's yesterday
       const todayDate = new Date(today);
       const lastDate = new Date(lastActive);
       const diffTime = Math.abs(todayDate - lastDate);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      this.state.todayXP = 0; // Reset daily XP for new day
+      this.state.todayXP = 0;
 
       if (diffDays === 1) {
-        // Safe, streak continues
+        // Streak is continuous
       } else if (diffDays === 2 && this.state.streakFreezes > 0) {
-        // Saved by streak freeze!
+        // Saved by streak freeze
         this.state.streakFreezes -= 1;
         console.log('Streak freeze consumed to protect streak!');
       } else if (diffDays > 1) {
-        // Streak lost
         this.state.streak = 0;
       }
       this.saveState();
@@ -107,7 +132,6 @@ class KoshurGamification {
       if (!this.state.practiceHistory.includes(today)) {
         this.state.practiceHistory.push(today);
       }
-      // Check streak badges
       if (this.state.streak >= 3) this.unlockBadge('streak3');
       if (this.state.streak >= 7) this.unlockBadge('streak7');
     }
@@ -115,7 +139,6 @@ class KoshurGamification {
     if (this.state.xp >= 300) this.unlockBadge('xpMaster');
     this.unlockBadge('firstLesson');
 
-    // Chinar leaves reward
     this.state.chinarLeaves += Math.max(5, Math.floor(earnedXP / 2));
     this.saveState();
   }

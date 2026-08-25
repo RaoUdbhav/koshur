@@ -10,6 +10,20 @@
 [[headers]]
   for = "/*"
   [headers.values]
+    # Prevent clickjacking & framing
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
+    
+    # Prevent MIME type sniffing
     X-Content-Type-Options = "nosniff"
+    
+    # Strict Referrer policy for privacy
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Restrict unneeded browser device hardware permissions
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    
+    # Enforce HTTPS strictly
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    
+    # Robust Content Security Policy (allows self-hosted scripts, styles, audio, and secure fonts)
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"

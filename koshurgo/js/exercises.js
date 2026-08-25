@@ -1,12 +1,6 @@
 /**
  * KoshurGo Interactive Exercises Suite
- * Implements 6 core game archetypes:
- * 1. Word Scrambler / Sentence Builder (V2 syntax)
- * 2. Speed Pair Match
- * 3. Audio & Listening Drill
- * 4. Multiple Choice Translation
- * 5. Cloze / Fill in the Blank
- * 6. Dialogue Stories
+ * Implements 6 core game archetypes with safe DOM manipulation and XSS prevention.
  */
 
 class KoshurExerciseRenderer {
@@ -59,7 +53,6 @@ class KoshurExerciseRenderer {
     this.matchedPairsCount = 0;
     this.selectedChoiceIndex = null;
 
-    // Update progress bar
     this.updateProgressBar();
 
     let contentHtml = '';
@@ -90,9 +83,7 @@ class KoshurExerciseRenderer {
       <div class="exercise-card animate-fade-in">
         ${contentHtml}
       </div>
-      <div id="feedback-tray" class="feedback-tray hidden">
-        <!-- Injected on check -->
-      </div>
+      <div id="feedback-tray" class="feedback-tray hidden"></div>
     `;
 
     this.bindExerciseEvents(item);
@@ -116,19 +107,19 @@ class KoshurExerciseRenderer {
     return `
       <div class="exercise-header">
         <span class="badge-type">🧩 Sentence Builder</span>
-        <h3 class="exercise-instruction">${item.instruction}</h3>
+        <h3 class="exercise-instruction">${escapeHTML(item.instruction)}</h3>
       </div>
       <div class="prompt-box">
-        <span class="prompt-en">"${item.targetEn}"</span>
-        <button type="button" class="btn-audio-sm" onclick="window.koshurAudio.speakText('${item.targetRoman}')" title="Listen">🔊</button>
+        <span class="prompt-en">"${escapeHTML(item.targetEn)}"</span>
+        <button type="button" class="btn-audio-sm" data-speak="${escapeHTML(item.targetRoman)}" title="Listen">🔊</button>
       </div>
       <div class="scramble-slots" id="scramble-slots" dir="${script === 'nastaliq' ? 'rtl' : 'ltr'}">
         <span class="slot-placeholder" id="slot-placeholder">Tap words below in correct Kashmiri order</span>
       </div>
       <div class="scramble-bank" id="scramble-bank" dir="${script === 'nastaliq' ? 'rtl' : 'ltr'}">
         ${tokens.map((tok, idx) => `
-          <button type="button" class="token-btn" data-index="${idx}" data-word="${tok}">
-            ${tok}
+          <button type="button" class="token-btn" data-index="${idx}" data-word="${escapeHTML(tok)}">
+            ${escapeHTML(tok)}
           </button>
         `).join('')}
       </div>
@@ -144,17 +135,17 @@ class KoshurExerciseRenderer {
     return `
       <div class="exercise-header">
         <span class="badge-type">⚡ Multiple Choice</span>
-        <h3 class="exercise-instruction">${item.promptEn}</h3>
+        <h3 class="exercise-instruction">${escapeHTML(item.promptEn)}</h3>
       </div>
       <div class="choice-grid">
         ${item.options.map((opt, idx) => {
           const text = (script === 'dev' && opt.dev) ? opt.dev : (script === 'nastaliq' && opt.nastaliq) ? opt.nastaliq : opt.roman;
-          const sub = script !== 'roman' && opt.roman ? `<span class="choice-sub">${opt.roman}</span>` : '';
+          const sub = script !== 'roman' && opt.roman ? `<span class="choice-sub">${escapeHTML(opt.roman)}</span>` : '';
           return `
             <button type="button" class="choice-card" data-index="${idx}">
               <span class="choice-num">${idx + 1}</span>
               <div class="choice-content">
-                <span class="choice-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${text}</span>
+                <span class="choice-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(text)}</span>
                 ${sub}
               </div>
             </button>
@@ -176,23 +167,23 @@ class KoshurExerciseRenderer {
     return `
       <div class="exercise-header">
         <span class="badge-type">⚡ Pair Matching</span>
-        <h3 class="exercise-instruction">${item.instruction}</h3>
+        <h3 class="exercise-instruction">${escapeHTML(item.instruction)}</h3>
       </div>
       <div class="match-arena">
         <div class="match-col" id="match-col-left">
-          ${shuffledPairs.map((p, idx) => `
-            <button type="button" class="match-btn left-btn" data-en="${p.en}">
-              ${p.en}
+          ${shuffledPairs.map((p) => `
+            <button type="button" class="match-btn left-btn" data-en="${escapeHTML(p.en)}">
+              ${escapeHTML(p.en)}
             </button>
           `).join('')}
         </div>
         <div class="match-col" id="match-col-right">
-          ${shuffledRight.map((p, idx) => {
+          ${shuffledRight.map((p) => {
             const koshur = (script === 'dev' && p.dev) ? p.dev : (script === 'nastaliq' && p.nastaliq) ? p.nastaliq : p.roman;
             return `
-              <button type="button" class="match-btn right-btn" data-en="${p.en}">
-                <span>${koshur}</span>
-                ${script !== 'roman' && p.roman ? `<small class="match-sub">${p.roman}</small>` : ''}
+              <button type="button" class="match-btn right-btn" data-en="${escapeHTML(p.en)}">
+                <span>${escapeHTML(koshur)}</span>
+                ${script !== 'roman' && p.roman ? `<small class="match-sub">${escapeHTML(p.roman)}</small>` : ''}
               </button>
             `;
           }).join('')}
@@ -210,13 +201,13 @@ class KoshurExerciseRenderer {
     return `
       <div class="exercise-header">
         <span class="badge-type">🎧 Audio Comprehension</span>
-        <h3 class="exercise-instruction">${item.instruction}</h3>
+        <h3 class="exercise-instruction">${escapeHTML(item.instruction)}</h3>
       </div>
       <div class="audio-prompt-center">
-        <button type="button" class="btn-audio-big" onclick="window.koshurAudio.speakText('${item.audioText}')" title="Play Normal Speed">
+        <button type="button" class="btn-audio-big" data-speak="${escapeHTML(item.audioText)}" title="Play Normal Speed">
           🔊
         </button>
-        <button type="button" class="btn-audio-slow" onclick="window.koshurAudio.speakText('${item.audioText}', true)" title="Play Slow Speed">
+        <button type="button" class="btn-audio-slow" data-speak="${escapeHTML(item.audioText)}" data-slow="true" title="Play Slow Speed">
           🐢 Slow
         </button>
       </div>
@@ -227,7 +218,7 @@ class KoshurExerciseRenderer {
             <button type="button" class="choice-card" data-index="${idx}">
               <span class="choice-num">${idx + 1}</span>
               <div class="choice-content">
-                <span class="choice-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${text}</span>
+                <span class="choice-main ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(text)}</span>
               </div>
             </button>
           `;
@@ -247,28 +238,28 @@ class KoshurExerciseRenderer {
     if (script === 'nastaliq' && item.sentenceTemplateNastaliq) template = item.sentenceTemplateNastaliq;
 
     const allOptions = [item.correctOption, ...item.distractors].sort(() => Math.random() - 0.5);
-
     const parts = template.split('{blank}');
+
     return `
       <div class="exercise-header">
         <span class="badge-type">📝 Fill in the Blank</span>
         <h3 class="exercise-instruction">Complete the Kashmiri sentence:</h3>
       </div>
       <div class="prompt-box">
-        <span class="prompt-en">"${item.sentenceEn}"</span>
+        <span class="prompt-en">"${escapeHTML(item.sentenceEn)}"</span>
       </div>
       <div class="cloze-sentence ${script === 'nastaliq' ? 'koshur-rtl' : ''}">
-        <span>${parts[0]}</span>
+        <span>${escapeHTML(parts[0])}</span>
         <span class="cloze-slot" id="cloze-slot">_____</span>
-        <span>${parts[1] || ''}</span>
+        <span>${escapeHTML(parts[1] || '')}</span>
       </div>
       <div class="cloze-options">
-        ${allOptions.map((opt, idx) => {
+        ${allOptions.map((opt) => {
           const text = (script === 'dev' && opt.dev) ? opt.dev : (script === 'nastaliq' && opt.nastaliq) ? opt.nastaliq : opt.roman;
           const isCorrect = (opt.roman === item.correctOption.roman);
           return `
-            <button type="button" class="cloze-btn" data-correct="${isCorrect}" data-text="${text}">
-              ${text}
+            <button type="button" class="cloze-btn" data-correct="${isCorrect}" data-text="${escapeHTML(text)}">
+              ${escapeHTML(text)}
             </button>
           `;
         }).join('')}
@@ -285,30 +276,30 @@ class KoshurExerciseRenderer {
     return `
       <div class="exercise-header">
         <span class="badge-type">📖 Cultural Story</span>
-        <h3 class="exercise-instruction">${item.storyTitle}</h3>
+        <h3 class="exercise-instruction">${escapeHTML(item.storyTitle)}</h3>
       </div>
       <div class="story-dialogue-flow">
         ${item.dialogues.map(d => {
           const text = (script === 'dev' && d.textDev) ? d.textDev : (script === 'nastaliq' && d.textNastaliq) ? d.textNastaliq : d.textRoman;
           return `
             <div class="story-bubble ${d.speaker === 'Learner' ? 'bubble-right' : 'bubble-left'}">
-              <strong class="speaker-tag">${d.speaker}</strong>
-              <p class="story-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${text}</p>
-              <small class="story-trans">${d.translation}</small>
-              <button type="button" class="btn-audio-mini" onclick="window.koshurAudio.speakText('${d.textRoman}')">🔊</button>
+              <strong class="speaker-tag">${escapeHTML(d.speaker)}</strong>
+              <p class="story-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(text)}</p>
+              <small class="story-trans">${escapeHTML(d.translation)}</small>
+              <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(d.textRoman)}">🔊</button>
             </div>
           `;
         }).join('')}
       </div>
       <div class="story-question-box">
-        <h4 class="story-q-prompt">${item.question.promptEn}</h4>
+        <h4 class="story-q-prompt">${escapeHTML(item.question.promptEn)}</h4>
         <div class="choice-grid">
           ${item.question.options.map((opt, idx) => {
             const text = (script === 'dev' && opt.dev) ? opt.dev : (script === 'nastaliq' && opt.nastaliq) ? opt.nastaliq : opt.roman;
             return `
               <button type="button" class="choice-card story-choice" data-index="${idx}">
                 <span class="choice-num">${idx + 1}</span>
-                <span class="choice-main">${text}</span>
+                <span class="choice-main">${escapeHTML(text)}</span>
               </button>
             `;
           }).join('')}
@@ -340,7 +331,6 @@ class KoshurExerciseRenderer {
             btn.classList.add('token-disabled');
             if (placeholder) placeholder.style.display = 'none';
 
-            // Create slotted token
             const slotted = document.createElement('button');
             slotted.className = 'token-btn token-in-slot';
             slotted.textContent = btn.dataset.word;
@@ -514,7 +504,7 @@ class KoshurExerciseRenderer {
           <div class="feedback-icon">${isCorrect ? '🎉' : '❌'}</div>
           <div class="feedback-text">
             <h4>${isCorrect ? 'Correct!' : 'Incorrect'}</h4>
-            <p>${message}</p>
+            <p>${escapeHTML(message)}</p>
           </div>
           <button type="button" id="btn-feedback-continue" class="btn-duo ${isCorrect ? 'btn-success' : 'btn-danger'}">
             Continue
