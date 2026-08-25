@@ -3,21 +3,22 @@
  * Handles Google Login, Email/Password Login, and Two-Way Firestore State Sync.
  */
 
-// Default or User-Provided Firebase Configuration
-// Replace these values with your Firebase Console Project credentials
+// Production Firebase Configuration for LearnKoshur
 const firebaseConfig = {
-  apiKey: window.KOSHUR_FIREBASE_API_KEY || "AIzaSyDemoPlaceholderKeyForKoshurGoApp",
-  authDomain: window.KOSHUR_FIREBASE_AUTH_DOMAIN || "koshurgo.firebaseapp.com",
-  projectId: window.KOSHUR_FIREBASE_PROJECT_ID || "koshurgo",
-  storageBucket: "koshurgo.appspot.com",
-  messagingSenderId: "1234567890",
-  appId: "1:1234567890:web:abcdef123456"
+  apiKey: "AIzaSyDm9cz1RfTBDME9-jdWtUYVPbe0MVszfcU",
+  authDomain: "learnkoshur.firebaseapp.com",
+  projectId: "learnkoshur",
+  storageBucket: "learnkoshur.firebasestorage.app",
+  messagingSenderId: "665552882941",
+  appId: "1:665552882941:web:bb33e9056b7170b132c294",
+  measurementId: "G-8G4JTMN2L7"
 };
 
 class KoshurFirebaseAuth {
   constructor() {
     this.auth = null;
     this.db = null;
+    this.analytics = null;
     this.currentUser = null;
     this.isFirebaseReady = false;
     this.unsubscribeFirestore = null;
@@ -33,6 +34,13 @@ class KoshurFirebaseAuth {
         }
         this.auth = firebase.auth();
         this.db = firebase.firestore();
+        if (typeof firebase.analytics === 'function') {
+          try {
+            this.analytics = firebase.analytics();
+          } catch (anErr) {
+            console.log('Analytics initialization note:', anErr);
+          }
+        }
         this.isFirebaseReady = true;
 
         this.auth.onAuthStateChanged((user) => {
