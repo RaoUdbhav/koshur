@@ -27,9 +27,19 @@ KoshurGo is built upon the **10 Core Duolingo Learning Experience Pillars** adap
      - *Easy / Relaxed*: 1 lesson/day · 10 XP target.
      - *Go / Regular*: 2–3 lessons/day · 30 XP target (Recommended).
      - *Intense / Hardcore*: 5+ lessons/day · 60+ XP target with speed challenge mode.
-8. **Chinar Bazaar**: In-app shop to purchase Streak Freezes, Heart Refills, and bonus badges with earned Chinar Leaves.
-9. **Full Reference Library**: Includes the complete **93 hand-checked vocabulary words** and all **1,330 Kashmiri proverbs** by Omkar N. Koul (2006).
-10. **Preserved Classic Site**: The legacy dictionary and reference portal is fully preserved in `learnkoshur_site/`.
+8. **Enhanced Proverb Cultural Engine**:
+   - 🌟 **Proverb of the Day (روٗزانہٕ کَہاوَت)**: Daily rotating featured proverb with deep philosophical meaning and 1-click clipboard card sharing.
+   - 🏷️ **Thematic Categorization**: Instant filters across *Wisdom*, *Humor/Satire*, *Nature & Kashmir*, *Food/Wazwan*, *Money/Trade*, and *Family*.
+   - 🎯 **Kashmiri Proverb Challenge**: Interactive situational riddles testing real-world proverb application (+20 XP).
+9. **Audio Lab & Phonetics Hub**:
+   - 🔊 **Kashmiri Phonetic Normalizer**: Pre-processes Kashmiri vowels (*ɨ*, *ə*, *ɔ*) and palatalized consonants (*k’*, *ts’*) for crystal-clear browser speech synthesis.
+   - 🎛️ **Variable Speed Control**: 0.6x (Turtle / Beginner), 0.85x (Standard), 1.0x (Native).
+   - 📊 **Visual Waveform Equalizer**: Pulsing acoustic animation during Kashmiri audio playback.
+   - 🎹 **Interactive Soundboard**: Audio & articulation guide for difficult Kashmiri phonemes.
+   - 🎬 **Curated Video Masterclasses**: Embedded YouTube video lessons from expert native educators (Neetu Koul, Kashmiri Conversation Series).
+10. **Chinar Bazaar & Gamification**: In-app shop with Streak Freezes, Heart Refills, and Kashmiri cultural badges.
+11. **Full Reference Library**: Includes all **93 hand-checked vocabulary words** and all **1,330 Kashmiri proverbs** by Omkar N. Koul (2006).
+12. **Preserved Classic Site**: The legacy dictionary and reference portal is fully preserved in `learnkoshur_site/`.
 
 ---
 

@@ -1,7 +1,8 @@
 /**
- * KoshurGo Audio Engine
- * Uses Web Audio API for synthetic gamification sound effects (100% offline & instant)
- * and Web Speech API / phonetic speech for Kashmiri audio pronunciations.
+ * KoshurGo Advanced Audio & Phonetics Engine
+ * Combines Web Audio API synthesis for gamification SFX,
+ * an intelligent Kashmiri Phonetic Transliteration normalizer for Speech Synthesis,
+ * multi-speed playback (0.6x, 0.85x, 1.0x), and soundboard acoustic guides.
  */
 
 class KoshurAudioEngine {
@@ -9,6 +10,7 @@ class KoshurAudioEngine {
     this.ctx = null;
     this.soundEnabled = true;
     this.speechRate = 0.85;
+    this.currentPlayingUtterance = null;
     this.initAudioContext();
   }
 
@@ -18,7 +20,7 @@ class KoshurAudioEngine {
       try {
         this.ctx = new AudioContext();
       } catch (e) {
-        console.warn('Web Audio API not supported in this browser', e);
+        console.warn('Web Audio API not supported', e);
       }
     }
   }
@@ -53,9 +55,7 @@ class KoshurAudioEngine {
     osc.stop(t + duration + 0.05);
   }
 
-  /**
-   * Cheerful Major Triad chime for correct answer (C5 -> E5 -> G5 -> C6)
-   */
+  // --- GAMIFICATION SOUND EFFECTS ---
   playCorrect() {
     if (!this.soundEnabled) return;
     this.playTone(523.25, 'triangle', 0.12, 0, 0.22);      // C5
@@ -64,9 +64,6 @@ class KoshurAudioEngine {
     this.playTone(1046.50, 'sine', 0.28, 0.24, 0.28);     // C6
   }
 
-  /**
-   * Soft descending tone for incorrect answer
-   */
   playIncorrect() {
     if (!this.soundEnabled) return;
     this.ensureContext();
@@ -77,7 +74,7 @@ class KoshurAudioEngine {
     const gain = this.ctx.createGain();
 
     osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(330, t); // E4
+    osc.frequency.setValueAtTime(330, t);
     osc.frequency.exponentialRampToValueAtTime(180, t + 0.28);
 
     gain.gain.setValueAtTime(0.15, t);
@@ -90,34 +87,22 @@ class KoshurAudioEngine {
     osc.stop(t + 0.35);
   }
 
-  /**
-   * Subtle click / token select
-   */
   playTap() {
     if (!this.soundEnabled) return;
     this.playTone(880, 'sine', 0.04, 0, 0.08);
   }
 
-  /**
-   * Token deselect / unslot
-   */
   playUntap() {
     if (!this.soundEnabled) return;
     this.playTone(587, 'sine', 0.04, 0, 0.06);
   }
 
-  /**
-   * Combo match sound
-   */
   playMatch() {
     if (!this.soundEnabled) return;
     this.playTone(659.25, 'sine', 0.08, 0, 0.18);
     this.playTone(880.00, 'triangle', 0.16, 0.07, 0.22);
   }
 
-  /**
-   * Streak celebration sound (Arpeggio)
-   */
   playStreak() {
     if (!this.soundEnabled) return;
     const notes = [440, 554.37, 659.25, 880, 1108.73];
@@ -126,15 +111,12 @@ class KoshurAudioEngine {
     });
   }
 
-  /**
-   * Lesson completion fanfare
-   */
   playVictory() {
     if (!this.soundEnabled) return;
-    const chord1 = [523.25, 659.25, 783.99]; // C major
-    const chord2 = [587.33, 739.99, 880.00]; // D major
-    const chord3 = [659.25, 830.61, 987.77]; // E major
-    const finalChord = [1046.50, 1318.51, 1567.98]; // High C
+    const chord1 = [523.25, 659.25, 783.99];
+    const chord2 = [587.33, 739.99, 880.00];
+    const chord3 = [659.25, 830.61, 987.77];
+    const finalChord = [1046.50, 1318.51, 1567.98];
 
     chord1.forEach(f => this.playTone(f, 'triangle', 0.18, 0, 0.15));
     chord2.forEach(f => this.playTone(f, 'triangle', 0.18, 0.15, 0.15));
@@ -142,32 +124,139 @@ class KoshurAudioEngine {
     finalChord.forEach(f => this.playTone(f, 'sine', 0.55, 0.50, 0.22));
   }
 
+  // --- KASHMIRI PHONETIC NORMALIZER & SPEECH SYNTHESIS ---
+
   /**
-   * Kashmiri Speech Pronunciation Helper
+   * Translates Kashmiri Romanized diacritics into optimized phonetic tokens
+   * for clear, natural speech synthesis across browser engines.
    */
-  speakText(text, slow = false) {
+  normalizeKashmiriPhonetics(text) {
+    if (!text) return '';
+    return text
+      // Centralized vowels
+      .replace(/ɨ/g, 'i')
+      .replace(/ɨ’|ɨ'/g, 'ik')
+      .replace(/ə/g, 'u')
+      .replace(/ɔ/g, 'aw')
+      .replace(/ãb|a:b/g, 'aab')
+      .replace(/ã/g, 'aa')
+      .replace(/õ:|õ/g, 'on')
+      // Affricates & Aspirates
+      .replace(/tsɨṭ/g, 'tsut')
+      .replace(/ts’|ts'/g, 'ts')
+      .replace(/tshõ:ḍ/g, 'tshond')
+      .replace(/tsh/g, 'ch')
+      .replace(/chhu/g, 'chhu')
+      .replace(/chhes/g, 'chhes')
+      .replace(/chhus/g, 'chhus')
+      .replace(/gatsaan/g, 'gatsaan')
+      // Palatalization markers
+      .replace(/’|'/g, '')
+      .replace(/ʿ|ʾ/g, '')
+      .trim();
+  }
+
+  /**
+   * Plays spoken Kashmiri with speed control & visual waveform trigger
+   */
+  speakText(text, isSlow = false, onEndCallback = null) {
     if (!('speechSynthesis' in window)) {
-      console.log('Speech synthesis not supported in browser');
+      console.warn('Speech synthesis not supported in this browser');
       return;
     }
 
     window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[\'\"\`\~\^]/g, '');
-    const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    // Look for Urdu/Hindi or Kashmiri voice if installed on OS
+    // Trigger visual soundwave pulsing if active on page
+    this.triggerWaveformAnimation(true);
+
+    const phoneticText = this.normalizeKashmiriPhonetics(text);
+    const utterance = new SpeechSynthesisUtterance(phoneticText);
+
+    // Discover optimal Indian/Urdu/Hindi voice for Kashmiri tone
     const voices = window.speechSynthesis.getVoices();
-    const koshurVoice = voices.find(v => v.lang.startsWith('ks') || v.lang.startsWith('ur') || v.lang.startsWith('hi') || v.lang.includes('India'));
+    const koshurVoice = voices.find(v => 
+      v.lang.startsWith('ks') || 
+      v.lang.startsWith('ur') || 
+      v.lang.startsWith('hi') || 
+      (v.lang.includes('IN') && (v.name.includes('India') || v.name.includes('Hindi') || v.name.includes('Urdu')))
+    ) || voices.find(v => v.lang.includes('IN'));
 
     if (koshurVoice) {
       utterance.voice = koshurVoice;
     }
 
-    utterance.rate = slow ? 0.6 : this.speechRate;
-    utterance.pitch = 1.0;
+    utterance.rate = isSlow ? 0.6 : this.speechRate;
+    utterance.pitch = 1.05;
+
+    utterance.onend = () => {
+      this.triggerWaveformAnimation(false);
+      if (onEndCallback) onEndCallback();
+    };
+
+    utterance.onerror = () => {
+      this.triggerWaveformAnimation(false);
+    };
+
+    this.currentPlayingUtterance = utterance;
     window.speechSynthesis.speak(utterance);
+  }
+
+  triggerWaveformAnimation(isPlaying) {
+    const waves = document.querySelectorAll('.soundwave-bar');
+    waves.forEach(w => {
+      w.classList.toggle('wave-active', isPlaying);
+    });
+  }
+
+  // --- KASHMIRI PHONETIC SOUNDBOARD GUIDE ---
+  getPhoneticGuide() {
+    return [
+      {
+        symbol: 'ɨ (ॖ / ِ)',
+        name: 'High Central Vowel',
+        koshurEx: 'tsɨṭ (piece)',
+        desc: 'Pronounced by keeping lips neutral and raising the middle of the tongue (between "ee" and "oo").',
+        audioText: 'tsut'
+      },
+      {
+        symbol: 'ə (ऺ / َ)',
+        name: 'Mid Central Schwa',
+        koshurEx: 'zə (two), gəd (fish)',
+        desc: 'Short relaxed "uh" vowel, common in Kashmiri word endings.',
+        audioText: 'zuh'
+      },
+      {
+        symbol: 'ɔ (ॏ / ۄ)',
+        name: 'Open Back Rounded',
+        koshurEx: 'kɔli (river), dɔn (two)',
+        desc: 'Open "aw" sound as in English "thought" or "caught".',
+        audioText: 'kawli'
+      },
+      {
+        symbol: 'ts (च़ / ژ)',
+        name: 'Alveolar Affricate',
+        koshurEx: 'tsoonth (apple), tsot (bread)',
+        desc: 'Crisp "ts" sound as in "cats" or German "zeit".',
+        audioText: 'tsoonth'
+      },
+      {
+        symbol: 'tsh (छ़ / چھ)',
+        name: 'Aspirated Affricate',
+        koshurEx: 'tshond (searched)',
+        desc: 'Heavily aspirated "ts" followed by a breath of air.',
+        audioText: 'tshond'
+      },
+      {
+        symbol: 'k’ / p’ / m’ (Palatalized)',
+        name: 'Soft Palatalized Consonants',
+        koshurEx: 'ɨk’ (one person)',
+        desc: 'Consonant pronounced with the tongue arched toward the hard palate (with a subtle "y" glide).',
+        audioText: 'iky'
+      }
+    ];
   }
 }
 
-// Global singleton instance
+// Global Singleton
 window.koshurAudio = new KoshurAudioEngine();

@@ -231,6 +231,9 @@ class KoshurGoApp {
       case 'proverbs':
         this.renderProverbsView(mainContainer);
         break;
+      case 'audioLab':
+        this.renderAudioLabView(mainContainer);
+        break;
       case 'flashcards':
         this.renderFlashcardsView(mainContainer);
         break;
@@ -461,46 +464,147 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: PROVERBS
+  // VIEW: PROVERBS (ENHANCED CULTURAL ENGINE)
   // ==========================================
+  getProverbOfTheDay() {
+    if (!this.proverbs || this.proverbs.length === 0) return null;
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    return this.proverbs[dayOfYear % this.proverbs.length];
+  }
+
   renderProverbsView(container) {
     const script = window.koshurGamification.state.scriptMode || 'roman';
+    const potd = this.getProverbOfTheDay();
+
+    const themes = [
+      { id: 'All', label: 'All (1,330)' },
+      { id: 'Wisdom', label: '🧘 Wisdom & Life', keywords: ['friend', 'faith', 'mind', 'heart', 'man', 'world', 'truth', 'life', 'god', 'time', 'good'] },
+      { id: 'Humor', label: '🎭 Humor & Irony', keywords: ['blind', 'fool', 'dog', 'thief', 'donkey', 'cat', 'mouse', 'vomit', 'mouth', 'eat'] },
+      { id: 'Nature', label: '🏔️ Nature & Kashmir', keywords: ['river', 'water', 'tree', 'snow', 'sun', 'fire', 'bird', 'flower', 'fish', 'stone', 'sum', 'kɔli'] },
+      { id: 'Food', label: '🍲 Food & Wazwan', keywords: ['rice', 'bread', 'tea', 'milk', 'apple', 'meat', 'gəza', 'pot', 'meal', 'tsot'] },
+      { id: 'Money', label: '💰 Money & Trade', keywords: ['money', 'debt', 'gold', 'silver', 'buy', 'sell', 'price', 'work', 'rich', 'poor'] },
+      { id: 'Family', label: '👨‍👩‍👧 Family & Society', keywords: ['mother', 'father', 'son', 'daughter', 'brother', 'sister', 'wife', 'neighbor', 'elder'] }
+    ];
+
+    const currentTheme = this.selectedCategory || 'All';
+    const themeObj = themes.find(t => t.id === currentTheme);
+
     const q = this.searchQuery.toLowerCase();
     const filtered = this.proverbs.filter(p => {
-      if (!q) return true;
-      return (p.roman && p.roman.toLowerCase().includes(q)) ||
+      // Search match
+      const matchQ = !q || (p.roman && p.roman.toLowerCase().includes(q)) ||
         (p.literal && p.literal.toLowerCase().includes(q)) ||
         (p.meaning && p.meaning.toLowerCase().includes(q)) ||
         (p.dev && p.dev.includes(q));
-    }).slice(0, 80);
+
+      // Theme match
+      let matchTheme = true;
+      if (themeObj && themeObj.keywords) {
+        const fullText = `${p.roman} ${p.literal} ${p.meaning}`.toLowerCase();
+        matchTheme = themeObj.keywords.some(kw => fullText.includes(kw));
+      }
+
+      return matchQ && matchTheme;
+    }).slice(0, 75);
 
     container.innerHTML = `
       <div class="proverbs-container animate-fade-in">
+        <!-- Hero: Proverb of the Day -->
+        ${potd ? `
+          <div class="potd-hero-card">
+            <div class="potd-badge">
+              <span>🌟 Proverb of the Day · روٗزانہٕ کَہاوَت</span>
+              <button type="button" class="btn-copy-card" id="btn-copy-potd" title="Copy Card">📋 Share</button>
+            </div>
+            <div class="potd-koshur-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">
+              ${escapeHTML(script === 'dev' && potd.dev ? potd.dev : potd.roman)}
+            </div>
+            <div class="potd-details">
+              <p class="potd-literal"><strong>Literal:</strong> "${escapeHTML(potd.literal || potd.meaning)}"</p>
+              ${potd.meaning ? `<p class="potd-meaning"><strong>Wisdom:</strong> ${escapeHTML(potd.meaning)}</p>` : ''}
+            </div>
+            <div class="potd-footer">
+              <button type="button" class="btn-audio-pill" data-speak="${escapeHTML(potd.roman)}">
+                🔊 Listen Pronunciation
+              </button>
+              <span class="potd-page">Omkar N. Koul · Page ${potd.page || 1}</span>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Header & Action Row -->
         <header class="view-header">
-          <h2>Kashmiri Proverbs (کٲشِرؠ کَہاوَت)</h2>
-          <p>1,330 proverbs from <em>A Dictionary of Kashmiri Proverbs</em> by Omkar N. Koul.</p>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div>
+              <h2>Kashmiri Proverbs (کٲشِرؠ کَہاوَت)</h2>
+              <p>Explore 1,330 proverbs of Kashmiri philosophy and culture.</p>
+            </div>
+            <button type="button" id="btn-launch-proverb-quiz" class="btn-duo btn-success" style="padding:10px 18px;font-size:13px;">
+              🎯 Proverb Challenge (+20 XP)
+            </button>
+          </div>
         </header>
 
+        <!-- Thematic Category Filter Pills -->
+        <div class="category-pills">
+          ${themes.map(t => `
+            <button type="button" class="pill-btn ${t.id === currentTheme ? 'pill-active' : ''}" data-theme="${escapeHTML(t.id)}">
+              ${escapeHTML(t.label)}
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Search Bar -->
         <div class="search-box">
           <input type="text" id="prov-search-input" placeholder="Search proverbs by meaning, keyword, or Kashmiri..." value="${escapeHTML(this.searchQuery)}">
         </div>
 
+        <!-- Proverbs Grid -->
         <div class="proverbs-list">
-          ${filtered.map((p, idx) => `
+          ${filtered.length > 0 ? filtered.map((p, idx) => `
             <div class="proverb-card">
               <div class="prov-header">
                 <span class="prov-num">#${idx + 1}</span>
-                <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(p.roman)}" title="Listen">🔊</button>
+                <div style="display:flex;gap:6px;">
+                  <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(p.roman)}" title="Listen">🔊</button>
+                </div>
               </div>
-              <div class="prov-koshur-text">${escapeHTML(script === 'dev' && p.dev ? p.dev : p.roman)}</div>
+              <div class="prov-koshur-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(script === 'dev' && p.dev ? p.dev : p.roman)}</div>
               <div class="prov-literal"><strong>Literal:</strong> "${escapeHTML(p.literal || p.meaning)}"</div>
               ${p.meaning ? `<div class="prov-meaning"><strong>Meaning:</strong> ${escapeHTML(p.meaning)}</div>` : ''}
               <div class="prov-citation">Page ${p.page || 1} · Source: Omkar N. Koul (2006)</div>
             </div>
-          `).join('')}
+          `).join('') : `
+            <div class="empty-state" style="text-align:center;padding:40px 20px;">
+              <p>No proverbs found for this filter. Try another keyword or category.</p>
+            </div>
+          `}
         </div>
       </div>
     `;
+
+    // Copy POTD listener
+    const copyBtn = document.getElementById('btn-copy-potd');
+    if (copyBtn && potd) {
+      copyBtn.addEventListener('click', () => {
+        const text = `🍁 Kashmiri Proverb of the Day:\n"${potd.roman}"\nLiteral: ${potd.literal}\nMeaning: ${potd.meaning || potd.literal}\n— via KoshurGo`;
+        navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied! ✨';
+        setTimeout(() => { copyBtn.textContent = '📋 Share'; }, 2000);
+      });
+    }
+
+    // Launch Proverb Challenge Mini-Game
+    const quizBtn = document.getElementById('btn-launch-proverb-quiz');
+    if (quizBtn) {
+      quizBtn.addEventListener('click', () => {
+        this.launchProverbChallenge();
+      });
+    }
 
     const searchInput = document.getElementById('prov-search-input');
     if (searchInput) {
@@ -509,6 +613,204 @@ class KoshurGoApp {
         this.renderProverbsView(container);
       });
     }
+
+    container.querySelectorAll('.pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.selectedCategory = btn.dataset.theme;
+        this.renderProverbsView(container);
+      });
+    });
+  }
+
+  launchProverbChallenge() {
+    const challenges = [
+      {
+        scenario: 'A person starts an ambitious task without proper preparation or tools, expecting quick success.',
+        correctProverb: 'Panun sum na sum, beyis suz kɔli (One cuts the barrage carelessly and drowns many)',
+        options: [
+          { roman: 'Panun sum na sum, beyis suz kɔli', meaning: 'Careless actions cause widespread trouble', correct: true },
+          { roman: 'Ãb chhu zindagāni', meaning: 'Water is life', correct: false },
+          { roman: 'Asul dost chhu modur ãb', meaning: 'A good friend is like sweet water', correct: false }
+        ]
+      },
+      {
+        scenario: 'Someone is giving extensive advice on wealth management while being completely in debt themselves.',
+        correctProverb: 'Panun tsoonth na gatsaan, beyis ditsaan sakhawat (One has no apple for oneself, yet claims to distribute feasts)',
+        options: [
+          { roman: 'Panun tsoonth na gatsaan, beyis ditsaan sakhawat', meaning: 'Giving what you do not have yourself', correct: true },
+          { roman: 'Ghar chhu jannat', meaning: 'Home is paradise', correct: false },
+          { roman: 'Nãr chhu tot', meaning: 'Fire is hot', correct: false }
+        ]
+      }
+    ];
+
+    const item = challenges[Math.floor(Math.random() * challenges.length)];
+
+    const mainContainer = document.getElementById('main-content-view');
+    mainContainer.innerHTML = `
+      <div class="lesson-player-wrapper animate-fade-in">
+        <div class="lesson-player-topbar">
+          <button type="button" id="btn-quit-challenge" class="btn-close-lesson">✕</button>
+          <span style="font-weight:800;color:var(--saffron-main);">🎯 Proverb Wisdom Challenge</span>
+          <span class="lesson-hearts">${window.koshurGamification.state.hearts} ❤️</span>
+        </div>
+
+        <div class="exercise-card">
+          <span class="badge-type">📜 Cultural Wisdom Riddle</span>
+          <h3 class="exercise-instruction">Which authentic Kashmiri proverb best fits this real-life situation?</h3>
+          <div class="prompt-box" style="margin:20px 0;background:rgba(234,160,35,0.08);border-left:4px solid var(--saffron-main);">
+            <p style="font-size:16px;line-height:1.5;"><strong>Situation:</strong> "${escapeHTML(item.scenario)}"</p>
+          </div>
+
+          <div class="choice-grid">
+            ${item.options.map((opt, idx) => `
+              <button type="button" class="choice-card challenge-opt" data-correct="${opt.correct}">
+                <span class="choice-num">${idx + 1}</span>
+                <div class="choice-content">
+                  <span class="choice-main">${escapeHTML(opt.roman)}</span>
+                  <span class="choice-sub">${escapeHTML(opt.meaning)}</span>
+                </div>
+              </button>
+            `).join('')}
+          </div>
+          <div class="action-footer">
+            <button type="button" id="btn-check-proverb-challenge" class="btn-duo btn-primary" disabled>Check Wisdom</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-quit-challenge').addEventListener('click', () => {
+      this.renderView('proverbs');
+    });
+
+    let selectedBtn = null;
+    const checkBtn = document.getElementById('btn-check-proverb-challenge');
+    document.querySelectorAll('.challenge-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.challenge-opt').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedBtn = btn;
+        checkBtn.disabled = false;
+      });
+    });
+
+    checkBtn.addEventListener('click', () => {
+      if (!selectedBtn) return;
+      const isCorrect = selectedBtn.dataset.correct === 'true';
+      if (isCorrect) {
+        window.koshurAudio.playVictory();
+        window.koshurGamification.recordActivity(20);
+        alert('🎉 Perfect! You mastered this Kashmiri proverb! (+20 XP awarded)');
+      } else {
+        window.koshurAudio.playIncorrect();
+        window.koshurGamification.deductHeart();
+        alert('❌ Not quite. The correct proverb matches the contextual situation!');
+      }
+      this.renderView('proverbs');
+    });
+  }
+
+  // ==========================================
+  // VIEW: AUDIO LAB & PHONETICS MASTERCLASS
+  // ==========================================
+  renderAudioLabView(container) {
+    const soundGuide = window.koshurAudio.getPhoneticGuide();
+
+    container.innerHTML = `
+      <div class="audio-lab-container animate-fade-in">
+        <header class="view-header">
+          <h2>🎧 Kashmiri Audio Lab & Phonetics Hub</h2>
+          <p>Master tricky Kashmiri vowels (*ɨ*, *ə*, *ɔ*), palatalized consonants, and native speech rhythms.</p>
+        </header>
+
+        <!-- Interactive Visual Equalizer Box -->
+        <div class="audio-equalizer-hero">
+          <div class="equalizer-waveform">
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+            <span class="soundwave-bar"></span>
+          </div>
+          <div class="equalizer-controls">
+            <span class="eq-label">Audio Speech Speed:</span>
+            <div class="speed-toggle-group">
+              <button type="button" class="btn-speed-opt" data-speed="0.6">🐢 0.6x Slow</button>
+              <button type="button" class="btn-speed-opt active-speed" data-speed="0.85">🐰 0.85x Normal</button>
+              <button type="button" class="btn-speed-opt" data-speed="1.0">⚡ 1.0x Fast</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kashmiri Phonetic Soundboard -->
+        <div class="settings-group-card" style="margin-top:24px;">
+          <h3>Kashmiri Phonetic Soundboard (Unique Sounds)</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:4px 0 16px;">
+            Tap any sound to hear native pronunciation guidance for sounds not found in English or Hindi.
+          </p>
+
+          <div class="soundboard-grid">
+            ${soundGuide.map(item => `
+              <div class="soundboard-card">
+                <div class="soundboard-top">
+                  <span class="sound-symbol">${escapeHTML(item.symbol)}</span>
+                  <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(item.audioText)}" title="Hear Sound">🔊 Play</button>
+                </div>
+                <h4 class="sound-name">${escapeHTML(item.name)}</h4>
+                <p class="sound-ex"><strong>Example:</strong> <em>${escapeHTML(item.koshurEx)}</em></p>
+                <small class="sound-desc">${escapeHTML(item.desc)}</small>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Curated Native Video Masterclasses -->
+        <div class="settings-group-card" style="margin-top:24px;">
+          <h3>Curated Video Masterclasses (Learn with Native Speakers)</h3>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:4px 0 16px;">
+            Hand-picked YouTube video masterclasses from expert Kashmiri language educators.
+          </p>
+
+          <div class="video-masterclass-grid">
+            <!-- Video 1: Neetu Koul Vowels -->
+            <div class="video-card">
+              <div class="video-embed-container">
+                <iframe src="https://www.youtube-nocookie.com/embed/m0dE7rY-Zrk" title="Learn Kashmiri Basic Sounds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+              <div class="video-info">
+                <h4>Kashmiri Vowels & Basic Sounds (Achar)</h4>
+                <p>Comprehensive guide to the 16 vowels in Kashmiri script and phonetics.</p>
+              </div>
+            </div>
+
+            <!-- Video 2: Conversational Sentences -->
+            <div class="video-card">
+              <div class="video-embed-container">
+                <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLc6N2U0v3a8V7Vd67E9D" title="Kashmiri Daily Conversations" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+              <div class="video-info">
+                <h4>Daily Kashmiri Conversational Practice</h4>
+                <p>Everyday speaking drills covering market greetings, family, and home.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Speed toggle listener
+    container.querySelectorAll('.btn-speed-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.btn-speed-opt').forEach(b => b.classList.remove('active-speed'));
+        btn.classList.add('active-speed');
+        window.koshurAudio.speechRate = parseFloat(btn.dataset.speed);
+        window.koshurAudio.playTap();
+      });
+    });
   }
 
   // ==========================================
