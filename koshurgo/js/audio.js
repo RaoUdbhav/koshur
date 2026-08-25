@@ -126,39 +126,41 @@ class KoshurAudioEngine {
 
   // --- KASHMIRI PHONETIC NORMALIZER & SPEECH SYNTHESIS ---
 
-  /**
-   * Translates Kashmiri Romanized diacritics into optimized phonetic tokens
-   * for clear, natural speech synthesis across browser engines.
-   */
   normalizeKashmiriPhonetics(text) {
     if (!text) return '';
     return text
-      // Centralized vowels
-      .replace(/ɨ/g, 'i')
-      .replace(/ɨ’|ɨ'/g, 'ik')
-      .replace(/ə/g, 'u')
-      .replace(/ɔ/g, 'aw')
+      // Centralized vowels & length
+      .replace(/ɨɨ|ॗ/g, 'ee')
+      .replace(/ɨ|ॖ/g, 'i')
+      .replace(/əə|ऻ/g, 'aa')
+      .replace(/ə|ऺ/g, 'u')
+      .replace(/ɔɔ/g, 'aw')
+      .replace(/ɔ|ॏ/g, 'aw')
       .replace(/ãb|a:b/g, 'aab')
       .replace(/ã/g, 'aa')
       .replace(/õ:|õ/g, 'on')
-      // Affricates & Aspirates
+      // Affricates & Specific Kashmiri Vocabulary
       .replace(/tsɨṭ/g, 'tsut')
+      .replace(/tsoonth/g, 'tsoonth')
+      .replace(/tsot/g, 'tsot')
       .replace(/ts’|ts'/g, 'ts')
-      .replace(/tshõ:ḍ/g, 'tshond')
+      .replace(/tshõ:ḍ|tshond/g, 'tshond')
       .replace(/tsh/g, 'ch')
       .replace(/chhu/g, 'chhu')
       .replace(/chhes/g, 'chhes')
       .replace(/chhus/g, 'chhus')
+      .replace(/chhiv/g, 'chhiv')
+      .replace(/chhaa/g, 'chhaa')
       .replace(/gatsaan/g, 'gatsaan')
+      .replace(/waraai/g, 'waraay')
+      .replace(/khudaayun/g, 'khudaayun')
+      .replace(/shukur/g, 'shukur')
       // Palatalization markers
       .replace(/’|'/g, '')
       .replace(/ʿ|ʾ/g, '')
       .trim();
   }
 
-  /**
-   * Plays spoken Kashmiri with speed control & visual waveform trigger
-   */
   speakText(text, isSlow = false, onEndCallback = null) {
     if (!('speechSynthesis' in window)) {
       console.warn('Speech synthesis not supported in this browser');
@@ -166,14 +168,11 @@ class KoshurAudioEngine {
     }
 
     window.speechSynthesis.cancel();
-
-    // Trigger visual soundwave pulsing if active on page
     this.triggerWaveformAnimation(true);
 
     const phoneticText = this.normalizeKashmiriPhonetics(text);
     const utterance = new SpeechSynthesisUtterance(phoneticText);
 
-    // Discover optimal Indian/Urdu/Hindi voice for Kashmiri tone
     const voices = window.speechSynthesis.getVoices();
     const koshurVoice = voices.find(v => 
       v.lang.startsWith('ks') || 
@@ -186,7 +185,7 @@ class KoshurAudioEngine {
       utterance.voice = koshurVoice;
     }
 
-    utterance.rate = isSlow ? 0.6 : this.speechRate;
+    utterance.rate = isSlow ? 0.55 : this.speechRate;
     utterance.pitch = 1.05;
 
     utterance.onend = () => {
@@ -209,50 +208,151 @@ class KoshurAudioEngine {
     });
   }
 
-  // --- KASHMIRI PHONETIC SOUNDBOARD GUIDE ---
-  getPhoneticGuide() {
+  // --- THE 16 KASHMIRI VOWELS (ACHAR) DATASET ---
+  getVowelMasterclass() {
     return [
       {
-        symbol: 'ɨ (ॖ / ِ)',
-        name: 'High Central Vowel',
-        koshurEx: 'tsɨṭ (piece)',
-        desc: 'Pronounced by keeping lips neutral and raising the middle of the tongue (between "ee" and "oo").',
-        audioText: 'tsut'
+        vowel: 'a (अ / َ)',
+        type: 'Short Front',
+        koshurWord: 'az (today)',
+        nastaliq: 'اَز',
+        dev: 'अज़',
+        desc: 'Short neutral "a" sound as in "sun" or "cup".',
+        audioKey: 'az'
       },
       {
-        symbol: 'ə (ऺ / َ)',
-        name: 'Mid Central Schwa',
-        koshurEx: 'zə (two), gəd (fish)',
-        desc: 'Short relaxed "uh" vowel, common in Kashmiri word endings.',
-        audioText: 'zuh'
+        vowel: 'aa (आ / آ)',
+        type: 'Long Front',
+        koshurWord: 'aab (water)',
+        nastaliq: 'آب',
+        dev: 'आब',
+        desc: 'Long open vowel as in English "father".',
+        audioKey: 'aab'
       },
       {
-        symbol: 'ɔ (ॏ / ۄ)',
-        name: 'Open Back Rounded',
-        koshurEx: 'kɔli (river), dɔn (two)',
-        desc: 'Open "aw" sound as in English "thought" or "caught".',
-        audioText: 'kawli'
+        vowel: 'i (इ / ِ)',
+        type: 'Short High',
+        koshurWord: 'il (cardamom)',
+        nastaliq: 'اِل',
+        dev: 'इल',
+        desc: 'Short crisp "i" as in "sit" or "pin".',
+        audioKey: 'il'
       },
       {
-        symbol: 'ts (च़ / ژ)',
-        name: 'Alveolar Affricate',
-        koshurEx: 'tsoonth (apple), tsot (bread)',
-        desc: 'Crisp "ts" sound as in "cats" or German "zeit".',
-        audioText: 'tsoonth'
+        vowel: 'ee / ii (ई / ی)',
+        type: 'Long High',
+        koshurWord: 'teer (cold)',
+        nastaliq: 'تِیر',
+        dev: 'तीर',
+        desc: 'Long "ee" sound as in "deep" or "fleet".',
+        audioKey: 'teer'
       },
       {
-        symbol: 'tsh (छ़ / چھ)',
-        name: 'Aspirated Affricate',
-        koshurEx: 'tshond (searched)',
-        desc: 'Heavily aspirated "ts" followed by a breath of air.',
-        audioText: 'tshond'
+        vowel: 'u (उ / ُ)',
+        type: 'Short Back',
+        koshurWord: 'un (blind)',
+        nastaliq: 'اُن',
+        dev: 'उन',
+        desc: 'Short "u" as in "put" or "foot".',
+        audioKey: 'un'
       },
       {
-        symbol: 'k’ / p’ / m’ (Palatalized)',
-        name: 'Soft Palatalized Consonants',
-        koshurEx: 'ɨk’ (one person)',
-        desc: 'Consonant pronounced with the tongue arched toward the hard palate (with a subtle "y" glide).',
-        audioText: 'iky'
+        vowel: 'oo / uu (ऊ / و)',
+        type: 'Long Back',
+        koshurWord: 'door (far)',
+        nastaliq: 'دُور',
+        dev: 'दूर',
+        desc: 'Long "oo" as in "moon" or "flute".',
+        audioKey: 'door'
+      },
+      {
+        vowel: 'ɨ (ॖ / ٕ)',
+        type: 'Centralized Short (Unique)',
+        koshurWord: 'tsɨṭ (piece/slice)',
+        nastaliq: 'ژٕٹ',
+        dev: 'च़ॖट',
+        desc: 'High central vowel: Make an "ee" mouth shape while making a sound in the middle of your tongue.',
+        audioKey: 'tsut'
+      },
+      {
+        vowel: 'ɨɨ (ॗ / ٖ)',
+        type: 'Centralized Long (Unique)',
+        koshurWord: 'tshɨɨr (delay / late)',
+        nastaliq: 'چھٖیر',
+        dev: 'छ़ॗर',
+        desc: 'Held long high central vowel.',
+        audioKey: 'tsheer'
+      },
+      {
+        vowel: 'ə (ऺ / ٚ)',
+        type: 'Mid Central Schwa (Unique)',
+        koshurWord: 'gəd (fish)',
+        nastaliq: 'گٲڈ',
+        dev: 'गऺड',
+        desc: 'Short mid-central relaxed vowel, very common in Kashmiri noun roots.',
+        audioKey: 'gud'
+      },
+      {
+        vowel: 'əə (ऻ / ٛ)',
+        type: 'Long Mid Central (Unique)',
+        koshurWord: 'məəl (father)',
+        nastaliq: 'مٲل',
+        dev: 'मऻल',
+        desc: 'Extended mid-central vowel tone.',
+        audioKey: 'maal'
+      },
+      {
+        vowel: 'ɔ (ॏ / ۄ)',
+        type: 'Open Back Rounded (Unique)',
+        koshurWord: 'dɔd (milk)',
+        nastaliq: 'دۄد',
+        dev: 'दॏद',
+        desc: 'Open "aw" vowel as in English "caught" or "law".',
+        audioKey: 'dawd'
+      },
+      {
+        vowel: 'e (ऎ / ॆ)',
+        type: 'Short Mid-Front',
+        koshurWord: 'en (glasses)',
+        nastaliq: 'ایٚن',
+        dev: 'ऎन',
+        desc: 'Crisp short "e" as in "bed".',
+        audioKey: 'en'
+      }
+    ];
+  }
+
+  // --- NATIVE CONVERSATIONAL DIALOGUES DATASET ---
+  getNativeConversations() {
+    return [
+      {
+        title: 'Bazaar-as Manz (At the Market)',
+        situation: 'Negotiating prices with a Srinagar fruit and spice vendor.',
+        lines: [
+          { speaker: 'Customer', koshur: 'Yath kyah chhu mol?', meaning: 'What is the price of this?', audio: 'Yath kyah chhu mol?' },
+          { speaker: 'Shopkeeper', koshur: 'Daah rupayi darjan haz.', meaning: 'Ten rupees a dozen, sir.', audio: 'Daah rupayi darjan haz.' },
+          { speaker: 'Customer', koshur: 'Kamyi dyiv na haz, bi chhus daaymi graahakh.', meaning: 'Give it for less please, I am a regular buyer.', audio: 'Kamyi dyiv na haz, bi chhus daaymi graahakh.' },
+          { speaker: 'Shopkeeper', koshur: 'Wara mol chhu haz, tulyiv saaseth!', meaning: 'This is the best genuine price, take it with joy!', audio: 'Wara mol chhu haz, tulyiv saaseth!' }
+        ]
+      },
+      {
+        title: 'Kashmiri Hospitality & Tea (Chay-i Peth)',
+        situation: 'Welcoming a guest into a traditional Kashmiri home.',
+        lines: [
+          { speaker: 'Host', koshur: 'Pakh haz andar, valiv baheev.', meaning: 'Please step inside, come sit down comfortably.', audio: 'Pakh haz andar, valiv baheev.' },
+          { speaker: 'Guest', koshur: 'Shukur haz parwardigaaras.', meaning: 'Thank you very much, praise be to God.', audio: 'Shukur haz parwardigaaras.' },
+          { speaker: 'Host', koshur: 'Noon Chai cheyiv kin Modur Kahwa?', meaning: 'Will you have Salted Pink Tea or Sweet Almond Kahwa?', audio: 'Noon Chai cheyiv kin Modur Kahwa?' },
+          { speaker: 'Guest', koshur: 'Me dyiv akh pyala garam Kahwa tsot-i seeth.', meaning: 'Please give me a warm cup of Kahwa with traditional bread.', audio: 'Me dyiv akh pyala garam Kahwa tsot-i seeth.' }
+        ]
+      },
+      {
+        title: 'Meeting a Friend in Srinagar (Haal-Chaal)',
+        situation: 'Inquiring about family and daily life.',
+        lines: [
+          { speaker: 'Farooq', koshur: 'Toh’ chhiva waraai? Ghar-as manz chhaa saari theek?', meaning: 'Are you doing well? Is everyone at home in good health?', audio: 'Toh’ chhiva waraai? Ghar-as manz chhaa saari theek?' },
+          { speaker: 'Sameer', koshur: 'Ahan haz, meherbani. Saari chhi theek.', meaning: 'Yes sir, by your kindness. Everyone is healthy.', audio: 'Ahan haz, meherbani. Saari chhi theek.' },
+          { speaker: 'Farooq', koshur: 'Koshur hetsaan chhu baasān asul.', meaning: 'Learning Kashmiri feels so good and enriching.', audio: 'Koshur hetsaan chhu baasān asul.' }
+        ]
       }
     ];
   }

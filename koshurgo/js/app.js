@@ -712,16 +712,18 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: AUDIO LAB & PHONETICS MASTERCLASS
+  // VIEW: AUDIO LAB & PHONETICS MASTERCLASS (NATIVE & INTERACTIVE)
   // ==========================================
   renderAudioLabView(container) {
-    const soundGuide = window.koshurAudio.getPhoneticGuide();
+    const vowels = window.koshurAudio.getVowelMasterclass();
+    const dialogues = window.koshurAudio.getNativeConversations();
+    const script = window.koshurGamification.state.scriptMode || 'roman';
 
     container.innerHTML = `
       <div class="audio-lab-container animate-fade-in">
         <header class="view-header">
           <h2>🎧 Kashmiri Audio Lab & Phonetics Hub</h2>
-          <p>Master tricky Kashmiri vowels (*ɨ*, *ə*, *ɔ*), palatalized consonants, and native speech rhythms.</p>
+          <p>Master the 16 Kashmiri vowels, centralized vowels (*ɨ*, *ə*, *ɔ*), and native conversational dialogues.</p>
         </header>
 
         <!-- Interactive Visual Equalizer Box -->
@@ -737,7 +739,7 @@ class KoshurGoApp {
             <span class="soundwave-bar"></span>
           </div>
           <div class="equalizer-controls">
-            <span class="eq-label">Audio Speech Speed:</span>
+            <span class="eq-label">Speech Speed:</span>
             <div class="speed-toggle-group">
               <button type="button" class="btn-speed-opt" data-speed="0.6">🐢 0.6x Slow</button>
               <button type="button" class="btn-speed-opt active-speed" data-speed="0.85">🐰 0.85x Normal</button>
@@ -746,57 +748,71 @@ class KoshurGoApp {
           </div>
         </div>
 
-        <!-- Kashmiri Phonetic Soundboard -->
+        <!-- Masterclass Module 1: The 16 Kashmiri Vowels (Achar) -->
         <div class="settings-group-card" style="margin-top:24px;">
-          <h3>Kashmiri Phonetic Soundboard (Unique Sounds)</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:4px 0 16px;">
-            Tap any sound to hear native pronunciation guidance for sounds not found in English or Hindi.
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h3>The 16 Kashmiri Vowels & Matras (कऻशुर स्वर)</h3>
+            <span class="badge-type">Phonetic Masterclass</span>
+          </div>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:6px 0 18px;">
+            Tap any vowel card to hear the precise phonetic sound and Kashmiri word example. Notice the unique centralized vowels (*ɨ, ɨɨ, ə, əə, ɔ*).
           </p>
 
-          <div class="soundboard-grid">
-            ${soundGuide.map(item => `
-              <div class="soundboard-card">
-                <div class="soundboard-top">
-                  <span class="sound-symbol">${escapeHTML(item.symbol)}</span>
-                  <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(item.audioText)}" title="Hear Sound">🔊 Play</button>
+          <div class="vowel-masterclass-grid">
+            ${vowels.map(v => {
+              const displayScript = (script === 'nastaliq') ? v.nastaliq : (script === 'dev') ? v.dev : v.koshurWord;
+              return `
+                <div class="vowel-card">
+                  <div class="vowel-card-header">
+                    <span class="vowel-symbol">${escapeHTML(v.vowel)}</span>
+                    <span class="vowel-type-tag">${escapeHTML(v.type)}</span>
+                  </div>
+                  <div class="vowel-example-row">
+                    <span class="vowel-word ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(displayScript)}</span>
+                    <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(v.audioKey)}" title="Listen">🔊 Play</button>
+                  </div>
+                  <small class="vowel-desc">${escapeHTML(v.desc)}</small>
                 </div>
-                <h4 class="sound-name">${escapeHTML(item.name)}</h4>
-                <p class="sound-ex"><strong>Example:</strong> <em>${escapeHTML(item.koshurEx)}</em></p>
-                <small class="sound-desc">${escapeHTML(item.desc)}</small>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         </div>
 
-        <!-- Curated Native Video Masterclasses -->
+        <!-- Masterclass Module 2: Native Conversational Audio Dialogues -->
         <div class="settings-group-card" style="margin-top:24px;">
-          <h3>Curated Video Masterclasses (Learn with Native Speakers)</h3>
-          <p style="font-size:13.5px;color:var(--text-muted);margin:4px 0 16px;">
-            Hand-picked YouTube video masterclasses from expert Kashmiri language educators.
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h3>Native Situational Dialogues (Koshur Baath)</h3>
+            <span class="badge-type">Conversational Drill</span>
+          </div>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:6px 0 18px;">
+            Interactive sentence-by-sentence audio players with translations and slow-speed breakdown.
           </p>
 
-          <div class="video-masterclass-grid">
-            <!-- Video 1: Neetu Koul Vowels -->
-            <div class="video-card">
-              <div class="video-embed-container">
-                <iframe src="https://www.youtube-nocookie.com/embed/m0dE7rY-Zrk" title="Learn Kashmiri Basic Sounds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-              </div>
-              <div class="video-info">
-                <h4>Kashmiri Vowels & Basic Sounds (Achar)</h4>
-                <p>Comprehensive guide to the 16 vowels in Kashmiri script and phonetics.</p>
-              </div>
-            </div>
+          <div class="dialogue-masterclass-list">
+            ${dialogues.map((dlg, dIdx) => `
+              <div class="dialogue-card">
+                <div class="dialogue-header">
+                  <h4>#${dIdx + 1} · ${escapeHTML(dlg.title)}</h4>
+                  <p class="dialogue-situation">${escapeHTML(dlg.situation)}</p>
+                </div>
 
-            <!-- Video 2: Conversational Sentences -->
-            <div class="video-card">
-              <div class="video-embed-container">
-                <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLc6N2U0v3a8V7Vd67E9D" title="Kashmiri Daily Conversations" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="dialogue-lines">
+                  ${dlg.lines.map(line => `
+                    <div class="dialogue-line-item">
+                      <div class="line-speaker-badge">${escapeHTML(line.speaker)}</div>
+                      <div class="line-content">
+                        <p class="line-koshur">${escapeHTML(line.koshur)}</p>
+                        <p class="line-meaning">"${escapeHTML(line.meaning)}"</p>
+                      </div>
+                      <div class="line-audio-actions">
+                        <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(line.audio)}" title="Listen Normal">🔊</button>
+                        <button type="button" class="btn-audio-mini btn-audio-slow-mini" data-speak="${escapeHTML(line.audio)}" data-slow="true" title="Listen Slow">🐢</button>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
               </div>
-              <div class="video-info">
-                <h4>Daily Kashmiri Conversational Practice</h4>
-                <p>Everyday speaking drills covering market greetings, family, and home.</p>
-              </div>
-            </div>
+            `).join('')}
           </div>
         </div>
       </div>
