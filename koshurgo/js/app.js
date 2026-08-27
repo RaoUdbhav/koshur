@@ -212,6 +212,7 @@ class KoshurGoApp {
 
   renderView(viewName) {
     this.currentView = viewName;
+    document.body.classList.remove('in-lesson');
     this.updateHeaderStats();
 
     document.querySelectorAll('[data-route]').forEach(btn => {
@@ -357,9 +358,10 @@ class KoshurGoApp {
 
     if (!targetLesson) return;
 
+    document.body.classList.add('in-lesson');
     const mainContainer = document.getElementById('main-content-view');
     mainContainer.innerHTML = `
-      <div class="lesson-player-wrapper">
+      <div class="lesson-player-wrapper animate-fade-in">
         <div class="lesson-player-topbar">
           <button type="button" id="btn-quit-lesson" class="btn-close-lesson">✕</button>
           <div class="lesson-progress-bar-bg">
@@ -368,16 +370,19 @@ class KoshurGoApp {
           <div class="lesson-hearts" id="lesson-hearts-counter">${window.koshurGamification.state.hearts} ❤️</div>
         </div>
         <div id="exercise-container"></div>
+        <div id="feedback-tray" class="feedback-tray hidden"></div>
       </div>
     `;
 
     document.getElementById('btn-quit-lesson').addEventListener('click', () => {
       if (confirm('Leave this lesson? Your progress for this session will be lost.')) {
+        document.body.classList.remove('in-lesson');
         this.renderView('path');
       }
     });
 
     window.koshurExerciseRenderer.startLesson(targetLesson, () => {
+      document.body.classList.remove('in-lesson');
       this.renderView('path');
     });
   }
@@ -1081,9 +1086,10 @@ class KoshurGoApp {
         items: [...mistakes]
       };
 
+      document.body.classList.add('in-lesson');
       const mainContainer = document.getElementById('main-content-view');
       mainContainer.innerHTML = `
-        <div class="lesson-player-wrapper">
+        <div class="lesson-player-wrapper animate-fade-in">
           <div class="lesson-player-topbar">
             <button type="button" id="btn-quit-lesson" class="btn-close-lesson">✕</button>
             <div class="lesson-progress-bar-bg">
@@ -1092,14 +1098,17 @@ class KoshurGoApp {
             <div class="lesson-hearts" id="lesson-hearts-counter">${gm.state.hearts} ❤️</div>
           </div>
           <div id="exercise-container"></div>
+          <div id="feedback-tray" class="feedback-tray hidden"></div>
         </div>
       `;
 
       document.getElementById('btn-quit-lesson').addEventListener('click', () => {
+        document.body.classList.remove('in-lesson');
         this.renderView('path');
       });
 
       window.koshurExerciseRenderer.startLesson(lesson, () => {
+        document.body.classList.remove('in-lesson');
         gm.refillHeartsFull();
         gm.state.mistakeQueue = [];
         gm.saveState();

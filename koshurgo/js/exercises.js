@@ -41,6 +41,12 @@ class KoshurExerciseRenderer {
     const container = document.getElementById('exercise-container');
     if (!container) return;
 
+    const tray = document.getElementById('feedback-tray');
+    if (tray) {
+      tray.style.display = 'none';
+      tray.className = 'feedback-tray hidden';
+    }
+
     if (this.currentIndex >= this.currentLesson.items.length) {
       this.renderLessonSummary();
       return;
@@ -484,7 +490,13 @@ class KoshurExerciseRenderer {
 
   handleResult(isCorrect, item, message) {
     this.isAnswerChecked = true;
-    const tray = document.getElementById('feedback-tray');
+    let tray = document.getElementById('feedback-tray');
+    if (!tray) {
+      tray = document.createElement('div');
+      tray.id = 'feedback-tray';
+      document.body.appendChild(tray);
+    }
+    
     const checkBtn = document.getElementById('btn-check-answer');
     if (checkBtn) checkBtn.style.display = 'none';
 
@@ -497,26 +509,27 @@ class KoshurExerciseRenderer {
       this.mistakesInRound.push(item);
     }
 
-    if (tray) {
-      tray.className = `feedback-tray ${isCorrect ? 'tray-correct' : 'tray-incorrect'} animate-slide-up`;
-      tray.innerHTML = `
-        <div class="feedback-content">
-          <div class="feedback-icon">${isCorrect ? '🎉' : '❌'}</div>
-          <div class="feedback-text">
-            <h4>${isCorrect ? 'Correct!' : 'Incorrect'}</h4>
-            <p>${escapeHTML(message)}</p>
-          </div>
-          <button type="button" id="btn-feedback-continue" class="btn-duo ${isCorrect ? 'btn-success' : 'btn-danger'}">
-            Continue
-          </button>
+    tray.className = `feedback-tray ${isCorrect ? 'tray-correct' : 'tray-incorrect'} animate-slide-up`;
+    tray.style.display = 'flex';
+    tray.innerHTML = `
+      <div class="feedback-content">
+        <div class="feedback-icon">${isCorrect ? '🎉' : '❌'}</div>
+        <div class="feedback-text">
+          <h4>${isCorrect ? 'Correct!' : 'Incorrect'}</h4>
+          <p>${escapeHTML(message)}</p>
         </div>
-      `;
+        <button type="button" id="btn-feedback-continue" class="btn-duo ${isCorrect ? 'btn-success' : 'btn-danger'}">
+          Continue
+        </button>
+      </div>
+    `;
 
-      document.getElementById('btn-feedback-continue').addEventListener('click', () => {
-        this.currentIndex += 1;
-        this.renderCurrentChallenge();
-      });
-    }
+    document.getElementById('btn-feedback-continue').addEventListener('click', () => {
+      tray.style.display = 'none';
+      tray.className = 'feedback-tray hidden';
+      this.currentIndex += 1;
+      this.renderCurrentChallenge();
+    });
   }
 
   renderLessonSummary() {
