@@ -124,7 +124,61 @@ class KoshurAudioEngine {
     finalChord.forEach(f => this.playTone(f, 'sine', 0.55, 0.50, 0.22));
   }
 
+  // --- AUDIO ASSET ROUTER & PLAYBACK ---
+  playAudioFile(url, isSlow = false, onEndCallback = null) {
+    if (!url) return false;
+    try {
+      const audio = new Audio(url);
+      audio.playbackRate = isSlow ? 0.65 : this.speechRate;
+      this.triggerWaveformAnimation(true);
+      
+      audio.onended = () => {
+        this.triggerWaveformAnimation(false);
+        if (onEndCallback) onEndCallback();
+      };
+      
+      audio.onerror = () => {
+        this.triggerWaveformAnimation(false);
+        if (onEndCallback) onEndCallback();
+      };
+
+      audio.play().catch(e => {
+        console.warn('Audio asset playback error, falling back to synth', e);
+        this.triggerWaveformAnimation(false);
+        if (onEndCallback) onEndCallback();
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // --- KASHMIRI PHONETIC NORMALIZER & SPEECH SYNTHESIS ---
+
+  getKashmiriIPA(text) {
+    if (!text) return '';
+    return text
+      .toLowerCase()
+      .replace(/ɨɨ|ॗ/g, 'ɨː')
+      .replace(/ɨ|ॖ/g, 'ɨ')
+      .replace(/əə|ऻ/g, 'əː')
+      .replace(/ə|ऺ/g, 'ə')
+      .replace(/ɔɔ/g, 'ɔː')
+      .replace(/ɔ|ॏ/g, 'ɔ')
+      .replace(/ts’|ts'/g, 'ts’')
+      .replace(/tsh/g, 'tsʰ')
+      .replace(/kh/g, 'kʰ')
+      .replace(/ch/g, 'tʃ')
+      .replace(/chh/g, 'tʃʰ')
+      .replace(/sh/g, 'ʃ')
+      .replace(/zh/g, 'ʒ')
+      .replace(/ng/g, 'ŋ')
+      .replace(/ny/g, 'ɲ')
+      .replace(/dand/g, 'd̪ənd̪')
+      .replace(/gəd/g, 'gəd̪')
+      .replace(/tsot/g, 'tsɔt̪')
+      .replace(/ãb|a:b/g, 'aːb');
+  }
 
   normalizeKashmiriPhonetics(text) {
     if (!text) return '';
@@ -206,6 +260,51 @@ class KoshurAudioEngine {
     waves.forEach(w => {
       w.classList.toggle('wave-active', isPlaying);
     });
+  }
+
+  // --- MICROPHONE VOICE RECORDER & PRONUNCIATION BOOTH ---
+  async startVoiceRecording(onStartCallback = null) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Microphone access is not supported on this browser.');
+      return false;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.recordedAudioChunks = [];
+
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.recordedAudioChunks.push(event.data);
+        }
+      };
+
+      this.mediaRecorder.start();
+      if (onStartCallback) onStartCallback();
+      return true;
+    } catch (err) {
+      console.warn('Microphone permission denied or unavailable', err);
+      alert('Microphone access was denied. Please allow microphone permissions to record your pronunciation.');
+      return false;
+    }
+  }
+
+  stopVoiceRecording(onRecordedCallback = null) {
+    if (!this.mediaRecorder || this.mediaRecorder.state === 'inactive') return;
+
+    this.mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(this.recordedAudioChunks, { type: 'audio/webm' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      if (onRecordedCallback) onRecordedCallback(audioUrl, audioBlob);
+      
+      // Stop all tracks to release mic
+      if (this.mediaRecorder.stream) {
+        this.mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      }
+    };
+
+    this.mediaRecorder.stop();
   }
 
   // --- THE 16 KASHMIRI VOWELS (ACHAR) DATASET ---

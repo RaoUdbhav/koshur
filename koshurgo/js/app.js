@@ -55,6 +55,15 @@ class KoshurGoApp {
       console.warn('Fallback loading proverbs', e);
       this.proverbs = [];
     }
+
+    try {
+      const audioIdxRes = await fetch('./data/audio_index.json');
+      this.audioIndex = await audioIdxRes.json();
+      window.koshurAudio.audioIndex = this.audioIndex;
+    } catch (e) {
+      console.warn('Fallback loading audio index', e);
+      this.audioIndex = null;
+    }
   }
 
   updateHeaderStats() {
@@ -754,6 +763,54 @@ class KoshurGoApp {
           </div>
         </div>
 
+        <!-- Pronunciation Studio & Voice Booth -->
+        <div class="settings-group-card" style="margin-top:24px;background:linear-gradient(135deg, rgba(46,125,122,0.06), rgba(234,160,35,0.06));border:2px solid var(--pine-main);">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <h3>🎙️ Kashmiri Pronunciation & Voice Studio</h3>
+            <span class="badge-type" style="background:var(--pine-main);color:#FFF;">Interactive Studio</span>
+          </div>
+          <p style="font-size:13.5px;color:var(--text-muted);margin:6px 0 14px;">
+            Test your pronunciation! Select any word from the 264-word library to see its exact IPA phonetic breakdown, listen to the native audio, and record your voice to compare side-by-side.
+          </p>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+            <select id="studio-word-select" class="select-script-dropdown" style="flex:1;min-width:200px;padding:10px 14px;font-size:14px;">
+              ${this.vocabulary.map((w) => `
+                <option value="${escapeHTML(w.roman)}" data-en="${escapeHTML(w.en)}" data-nastaliq="${escapeHTML(w.nastaliq || '')}" data-dev="${escapeHTML(w.dev || '')}">
+                  ${escapeHTML(w.roman)} (${escapeHTML(w.en)}) - ${escapeHTML(w.nastaliq || '')} / ${escapeHTML(w.dev || '')}
+                </option>
+              `).join('')}
+            </select>
+            <button type="button" id="btn-studio-play-native" class="btn-duo btn-primary" style="padding:10px 18px;">
+              🔊 Native Audio
+            </button>
+            <button type="button" id="btn-studio-play-slow" class="btn-duo" style="padding:10px 18px;background:rgba(234,160,35,0.15);border:2px solid var(--saffron-main);color:var(--text-main);">
+              🐢 Turtle 0.6x
+            </button>
+          </div>
+
+          <div id="studio-ipa-box" style="background:var(--bg-card);border:2px solid var(--border-color);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <div>
+                <span style="font-size:12px;font-weight:700;color:var(--pine-main);text-transform:uppercase;letter-spacing:0.05em;">IPA Phonetic Transcription:</span>
+                <div id="studio-ipa-display" style="font-size:20px;font-weight:800;color:var(--chinar-main);font-family:monospace;margin-top:2px;">[tsɨʈ]</div>
+              </div>
+              <div id="studio-script-display" style="font-size:18px;font-weight:700;color:var(--text-main);">ژٕٹ / च़ॖट</div>
+            </div>
+          </div>
+
+          <!-- Record & Playback Controls -->
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button type="button" id="btn-studio-record" class="btn-duo btn-danger" style="display:inline-flex;align-items:center;gap:6px;">
+              <span id="studio-rec-icon">🔴</span> <span id="studio-rec-text">Record My Voice</span>
+            </button>
+            <button type="button" id="btn-studio-play-user" class="btn-duo btn-success" style="display:none;">
+              ▶️ Play My Recording
+            </button>
+            <span id="studio-rec-status" style="font-size:13px;color:var(--text-muted);font-weight:600;"></span>
+          </div>
+        </div>
+
         <!-- Masterclass Module 1: The 16 Kashmiri Vowels (Achar) -->
         <div class="settings-group-card" style="margin-top:24px;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
@@ -833,6 +890,90 @@ class KoshurGoApp {
         window.koshurAudio.playTap();
       });
     });
+
+    // Pronunciation Studio logic
+    const wordSelect = document.getElementById('studio-word-select');
+    const ipaDisplay = document.getElementById('studio-ipa-display');
+    const scriptDisplay = document.getElementById('studio-script-display');
+    const playNativeBtn = document.getElementById('btn-studio-play-native');
+    const playSlowBtn = document.getElementById('btn-studio-play-slow');
+    const recordBtn = document.getElementById('btn-studio-record');
+    const playUserBtn = document.getElementById('btn-studio-play-user');
+    const recStatus = document.getElementById('studio-rec-status');
+    const recText = document.getElementById('studio-rec-text');
+    const recIcon = document.getElementById('studio-rec-icon');
+
+    let userAudioUrl = null;
+    let isRecording = false;
+
+    const updateStudioWord = () => {
+      if (!wordSelect) return;
+      const opt = wordSelect.options[wordSelect.selectedIndex];
+      if (opt) {
+        const val = opt.value;
+        const nastaliq = opt.dataset.nastaliq || '';
+        const dev = opt.dataset.dev || '';
+        if (ipaDisplay) ipaDisplay.textContent = `[${window.koshurAudio.getKashmiriIPA(val)}]`;
+        if (scriptDisplay) scriptDisplay.textContent = `${nastaliq} / ${dev}`;
+      }
+    };
+
+    if (wordSelect) {
+      wordSelect.addEventListener('change', updateStudioWord);
+      updateStudioWord();
+    }
+
+    if (playNativeBtn) {
+      playNativeBtn.addEventListener('click', () => {
+        if (!wordSelect) return;
+        window.koshurAudio.playTap();
+        window.koshurAudio.speakText(wordSelect.value, false);
+      });
+    }
+
+    if (playSlowBtn) {
+      playSlowBtn.addEventListener('click', () => {
+        if (!wordSelect) return;
+        window.koshurAudio.playTap();
+        window.koshurAudio.speakText(wordSelect.value, true);
+      });
+    }
+
+    if (recordBtn) {
+      recordBtn.addEventListener('click', async () => {
+        if (!isRecording) {
+          const started = await window.koshurAudio.startVoiceRecording(() => {
+            isRecording = true;
+            recordBtn.classList.remove('btn-danger');
+            recordBtn.classList.add('btn-primary');
+            if (recText) recText.textContent = 'Stop Recording (Tap when done)';
+            if (recIcon) recIcon.textContent = '⏹️';
+            if (recStatus) recStatus.textContent = 'Recording in progress... Speak clearly!';
+            if (playUserBtn) playUserBtn.style.display = 'none';
+          });
+        } else {
+          window.koshurAudio.stopVoiceRecording((audioUrl) => {
+            isRecording = false;
+            userAudioUrl = audioUrl;
+            recordBtn.classList.remove('btn-primary');
+            recordBtn.classList.add('btn-danger');
+            if (recText) recText.textContent = 'Record Again';
+            if (recIcon) recIcon.textContent = '🔴';
+            if (recStatus) recStatus.textContent = 'Recording saved! Tap "Play My Recording" to compare.';
+            if (playUserBtn) playUserBtn.style.display = 'inline-flex';
+          });
+        }
+      });
+    }
+
+    if (playUserBtn) {
+      playUserBtn.addEventListener('click', () => {
+        if (userAudioUrl) {
+          const userAudio = new Audio(userAudioUrl);
+          userAudio.play();
+        }
+      });
+    }
   }
 
   // ==========================================
