@@ -2357,5 +2357,170 @@
     "exampleEn": "Loyalty is a noble virtue.",
     "exampleNastaliq": "وَفاداری چھِ اَصٕل صِفَت",
     "exampleDev": "वफ़ादारी छि असुल सिफ़त"
+  },
+  {
+    "en": "car",
+    "roman": "gāḍi",
+    "nastaliq": "گاڑی",
+    "dev": "गाड़ी",
+    "category": "General",
+    "exampleRoman": "yi gāḍi kəmsnz chhi?",
+    "exampleEn": "Whose car is this?",
+    "exampleNastaliq": "یِہ گاڑی کٔمؠ سٕنٛز چھِ؟",
+    "exampleDev": "यिह गाड़ी कऺमिसंज़ छि?"
+  },
+  {
+    "en": "signature",
+    "roman": "daskhat",
+    "nastaliq": "دَستَخَط",
+    "dev": "दस्तख़त",
+    "category": "Society",
+    "exampleRoman": "kagazas peth kariyiv daskhat",
+    "exampleEn": "Please sign on the document.",
+    "exampleNastaliq": "کاغَذَس پیٚٹھ کٔرِیو دَستَخَط",
+    "exampleDev": "काग़ज़स पेठ करियिव दस्तख़त"
+  },
+  {
+    "en": "medicine",
+    "roman": "dawaah",
+    "nastaliq": "دَوا",
+    "dev": "दवाह",
+    "category": "General",
+    "exampleRoman": "bimaaran dyiv dawaah",
+    "exampleEn": "Give medicine to the sick patient.",
+    "exampleNastaliq": "بیٖمارَن دِیو دَوا",
+    "exampleDev": "बीमारन दियिव दवाह"
+  },
+  {
+    "en": "cupboard",
+    "roman": "almāri",
+    "nastaliq": "المٲری",
+    "dev": "अलमारी",
+    "category": "General",
+    "exampleRoman": "almāri kariyiv kholith",
+    "exampleEn": "Open the cupboard.",
+    "exampleNastaliq": "المٲری کٔرِیو کھۄلِتھ",
+    "exampleDev": "अलमारी करियिव खुलित्थ"
+  },
+  {
+    "en": "person",
+    "roman": "nafar",
+    "nastaliq": "نَفَر",
+    "dev": "नफ़र",
+    "category": "People",
+    "exampleRoman": "yi nafar kus chhu?",
+    "exampleEn": "Who is this person?",
+    "exampleNastaliq": "یِہ نَفَر کُس چھُ؟",
+    "exampleDev": "यिह नफ़र कुस छु?"
+  },
+  {
+    "en": "highland hut",
+    "roman": "dhok",
+    "nastaliq": "ڈھوک",
+    "dev": "ढोक",
+    "category": "Places",
+    "exampleRoman": "yeth jangal-as manz chhaa kãh dhok?",
+    "exampleEn": "Is there any highland shepherd hut in this forest?",
+    "exampleNastaliq": "یَتھ جَنٛگلَس مَنٛز چھا کانٛہہ ڈھوک؟",
+    "exampleDev": "यथ जंगलस मंज़ छा कांह ढोक?"
+  },
+  {
+    "en": "brook",
+    "roman": "nālah",
+    "nastaliq": "نالہٕ",
+    "dev": "नाल",
+    "category": "Nature",
+    "exampleRoman": "kulyan manza chhu nālah wahaan",
+    "exampleEn": "A mountain stream flows through the trees.",
+    "exampleNastaliq": "کُلؠن مَنٛزا چھُ نالہٕ وَہان",
+    "exampleDev": "कुल्यन मंज़ा छु नाल वहान"
+  },
+  {
+    "en": "hardship",
+    "roman": "museebat",
+    "nastaliq": "مُصیٖبَت",
+    "dev": "मुसीबत",
+    "category": "Society",
+    "exampleRoman": "asi karav mushkil door karnech koshish",
+    "exampleEn": "We will try to resolve the difficulty.",
+    "exampleNastaliq": "اَسؠ کَرو مُشکِل دوٗر کَرنٕچ کوشِش",
+    "exampleDev": "अस्य करव मुश्किल दूर करनेच कोशिश"
+  },
+  {
+    "en": "effort",
+    "roman": "koshish",
+    "nastaliq": "کوشِش",
+    "dev": "कोशिश",
+    "category": "Society",
+    "exampleRoman": "hamesha kariyiv koshish",
+    "exampleEn": "Always make an honest effort.",
+    "exampleNastaliq": "ہَمیشہٕ کٔرِیو کوشِش",
+    "exampleDev": "हमेश करियिव कोशिश"
+  },
+  {
+    "en": "prohibited",
+    "roman": "mana",
+    "nastaliq": "مَنا",
+    "dev": "मना",
+    "category": "Society",
+    "exampleRoman": "yor gasun chhu mana",
+    "exampleEn": "Going this way is prohibited.",
+    "exampleNastaliq": "یور گَژھُن چھُ مَنا",
+    "exampleDev": "योर गछ़ुन छु मना"
+  },
+  {
+    "en": "crowd",
+    "roman": "bheed",
+    "nastaliq": "بھیٖڈ",
+    "dev": "भीड़",
+    "category": "Society",
+    "exampleRoman": "yeti ma kariv bheed",
+    "exampleEn": "Please do not cause a crowd here.",
+    "exampleNastaliq": "یَتہِ مَہ کٔرِیو بھیٖڈ",
+    "exampleDev": "यति मह करिव भीड़"
+  },
+  {
+    "en": "document",
+    "roman": "kāgaz",
+    "nastaliq": "کاغَذ",
+    "dev": "काग़ज़",
+    "category": "General",
+    "exampleRoman": "kāgaz thawiv saaf",
+    "exampleEn": "Keep the document safe and clean.",
+    "exampleNastaliq": "کاغَذ تھاوِیو صاف",
+    "exampleDev": "काग़ज़ थाविव साफ़"
+  },
+  {
+    "en": "whither / where to",
+    "roman": "kot",
+    "nastaliq": "کوت",
+    "dev": "कोत",
+    "category": "General",
+    "exampleRoman": "yi wath kot chhi gatsaan?",
+    "exampleEn": "Where does this path lead to?",
+    "exampleNastaliq": "یِہ وَتھ کوت چھِ گَژھان؟",
+    "exampleDev": "यिह वथ कोत छि गछ़ान?"
+  },
+  {
+    "en": "which direction",
+    "roman": "kapeer",
+    "nastaliq": "کَپیٖر",
+    "dev": "कपेर",
+    "category": "General",
+    "exampleRoman": "janglas manz gasnech wath kapeer chhi?",
+    "exampleEn": "Which direction is the way through the forest?",
+    "exampleNastaliq": "جَنٛگلَس مَنٛز گَژھنٕچ وَتھ کَپیٖر چھِ؟",
+    "exampleDev": "जंगलस मंज़ गछ़नेच वथ कपॆर छि?"
+  },
+  {
+    "en": "anger",
+    "roman": "jahal",
+    "nastaliq": "زَہَر",
+    "dev": "ज़हर/क्रोध",
+    "category": "Qualities",
+    "exampleRoman": "meherbani kərith ma kariv jahal",
+    "exampleEn": "Please do not become angry.",
+    "exampleNastaliq": "مِہرَبٲنی کٔرِتھ مَہ کٔرِیو زَہَر",
+    "exampleDev": "मेहरबानी कऺरिथ मह करिव ज़हर"
   }
 ]

@@ -348,6 +348,28 @@ const KOSHUR_CURRICULUM = {
                   tokensDev: ['चे', 'क्याह', 'छुय', 'नाव?', 'म्योन', 'कति'],
                   tokensNastaliq: ['ژےٚ', 'کیاہ', 'چھُی', 'ناو؟', 'مِون', 'کَتہِ'],
                   correctOrder: [0, 1, 2, 3]
+                },
+                {
+                  type: 'scramble',
+                  instruction: 'Assemble: "Where does this road go?"',
+                  targetEn: 'Where does this road go?',
+                  targetRoman: 'Yi wath kot chhi gatsaan?',
+                  targetDev: 'यिह वथ कोत छि गछ़ान?',
+                  targetNastaliq: 'یِہ وَتھ کوت چھِ گَژھان؟',
+                  tokensRoman: ['Yi', 'wath', 'kot', 'chhi', 'gatsaan?', 'ghar'],
+                  tokensDev: ['यिह', 'वथ', 'कोत', 'छि', 'गछ़ान?', 'घर'],
+                  tokensNastaliq: ['یِہ', 'وَتھ', 'کوت', 'چھِ', 'گَژھان؟', 'گَر'],
+                  correctOrder: [0, 1, 2, 3, 4]
+                },
+                {
+                  type: 'choice',
+                  promptEn: 'How do you ask "Whose shop is this?" in Kashmiri?',
+                  options: [
+                    { roman: 'Yi dukaan kəmsund chhu?', dev: 'यिह दुकान कऺमिसुंद छु?', nastaliq: 'یِہ دُکان کٔمؠ سُنٛد چھُ؟', correct: true },
+                    { roman: 'Yi dukaan katis chhu?', dev: 'यिह दुकान कतिस छु?', nastaliq: 'یِہ دُکان کَتِس چھُ؟', correct: false },
+                    { roman: 'Yi gaadi kyah chhi?', dev: 'यिह गाड़ी क्याह छि?', nastaliq: 'یِہ گاڑی کیاہ چھِ؟', correct: false },
+                    { roman: 'Dukaan kar kholiyiv?', dev: 'दुकान कर खोलियिव?', nastaliq: 'دُکان کَر کھولِیو؟', correct: false }
+                  ]
                 }
               ]
             }

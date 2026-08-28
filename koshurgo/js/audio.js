@@ -353,6 +353,35 @@ class KoshurAudioEngine {
           { speaker: 'Sameer', koshur: 'Ahan haz, meherbani. Saari chhi theek.', meaning: 'Yes sir, by your kindness. Everyone is healthy.', audio: 'Ahan haz, meherbani. Saari chhi theek.' },
           { speaker: 'Farooq', koshur: 'Koshur hetsaan chhu baasān asul.', meaning: 'Learning Kashmiri feels so good and enriching.', audio: 'Koshur hetsaan chhu baasān asul.' }
         ]
+      },
+      {
+        title: 'Asking Directions & Road Travel (Wath Pruchhun)',
+        situation: 'Asking locals for navigation along valley roads and mountain paths.',
+        lines: [
+          { speaker: 'Traveller', koshur: 'Yi wath kot chhi gatsaan?', meaning: 'Where does this road lead to?', audio: 'Yi wath kot chhi gatsaan?' },
+          { speaker: 'Local', koshur: 'Yi wath chhi seedi shahr-as gatsaan.', meaning: 'This road leads straight to the city.', audio: 'Yi wath chhi seedi shahr-as gatsaan.' },
+          { speaker: 'Traveller', koshur: 'Huti jangal-as manz gasnech wath kapeer chhi?', meaning: 'Which way leads through the forest path?', audio: 'Huti jangal-as manz gasnech wath kapeer chhi?' },
+          { speaker: 'Local', koshur: 'Naalah-as nish pakhiv, wath chhi aasaan.', meaning: 'Walk along the mountain stream, the path is easy.', audio: 'Naalah-as nish pakhiv, wath chhi aasaan.' }
+        ]
+      },
+      {
+        title: 'Village & Community Inquiries (Gom-as Manz)',
+        situation: 'Respectfully inquiring about homes and elders in a Kashmiri village.',
+        lines: [
+          { speaker: 'Visitor', koshur: 'Yi dukaan ti makaan kəmsund chhu?', meaning: 'Whose shop and house is this?', audio: 'Yi dukaan ti makaan kəmsund chhu?' },
+          { speaker: 'Villager', koshur: 'Yi chhu kaandar saeb-un dukaan.', meaning: 'This is the master baker’s traditional shop.', audio: 'Yi chhu kaandar saeb-un dukaan.' },
+          { speaker: 'Visitor', koshur: 'Moulvi saeb-un ghar kateth chhu?', meaning: 'Where is the respected scholar/elder’s home?', audio: 'Moulvi saeb-un ghar kateth chhu?' },
+          { speaker: 'Villager', koshur: 'Makanas darwaza kholyiv, su chhu andar behith.', meaning: 'Step to the door, he is seated inside with guests.', audio: 'Makanas darwaza kholyiv, su chhu andar behith.' }
+        ]
+      },
+      {
+        title: 'Community Care & Well-being (Dawaah ti Shifa)',
+        situation: 'Helping someone unwell and offering reassurance.',
+        lines: [
+          { speaker: 'Doctor', koshur: 'Imes kyah chhu naav? Kahan chhu daag?', meaning: 'What is his name? Where is the pain located?', audio: 'Imes kyah chhu naav? Kahan chhu daag?' },
+          { speaker: 'Family', koshur: 'Meherbani kərith dyiv imes dawaah.', meaning: 'Please give him soothing medicine.', audio: 'Meherbani kərith dyiv imes dawaah.' },
+          { speaker: 'Doctor', koshur: 'Asi karav mushkil door karnech koshish, aaraam kariyiv.', meaning: 'We will do our best to help relieve the pain, please rest.', audio: 'Asi karav mushkil door karnech koshish, aaraam kariyiv.' }
+        ]
       }
     ];
   }
