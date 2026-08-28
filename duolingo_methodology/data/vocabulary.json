@@ -2786,5 +2786,170 @@
     "exampleEn": "Do not worry or fear, everything is well.",
     "exampleNastaliq": "کھۆژِیو مَہ، ساری چھُ ٹھیٖک",
     "exampleDev": "खॊछ़िव मह, सारी छु ठीक"
+  },
+  {
+    "en": "drinking water",
+    "roman": "treysh",
+    "nastaliq": "تریٚش",
+    "dev": "त्रेश",
+    "category": "Food",
+    "exampleRoman": "me chhu treysh lagech",
+    "exampleEn": "I am feeling thirsty / I need drinking water.",
+    "exampleNastaliq": "مےٚ چھُ تریٚش لٔگٕژ",
+    "exampleDev": "मे छु त्रेश लऺगॖच"
+  },
+  {
+    "en": "fog",
+    "roman": "vunar",
+    "nastaliq": "وُنَر",
+    "dev": "वुनर",
+    "category": "Nature",
+    "exampleRoman": "wandas chhu vunar aasan",
+    "exampleEn": "There is thick fog during the winter mornings.",
+    "exampleNastaliq": "وَندَس چھُ وُنَر آسان",
+    "exampleDev": "वंदस छु वुनर आसान"
+  },
+  {
+    "en": "smoke",
+    "roman": "duh",
+    "nastaliq": "دُہ",
+    "dev": "दुह",
+    "category": "Nature",
+    "exampleRoman": "bukhari-huk duh chhu neran",
+    "exampleEn": "Smoke rises from the traditional heater (bukhari).",
+    "exampleNastaliq": "بُخاری ہُنٛد دُہ چھُ نیران",
+    "exampleDev": "बुखारी हुंद दुह छु न्येरन"
+  },
+  {
+    "en": "wife",
+    "roman": "khāndāren",
+    "nastaliq": "خانٛدارؠن",
+    "dev": "खान्दारिन",
+    "category": "People",
+    "exampleRoman": "khāndāren chhi gharuk saamaan vuchhaan",
+    "exampleEn": "The wife manages the home affairs.",
+    "exampleNastaliq": "خانٛدارؠن چھِ گَرُک سامان وُچھان",
+    "exampleDev": "खान्दारिन छि गरुक सामान वुछान"
+  },
+  {
+    "en": "cousin",
+    "roman": "pitur",
+    "nastaliq": "پِتُر",
+    "dev": "पितुर",
+    "category": "People",
+    "exampleRoman": "myon pitur chhu srinagaras rozaan",
+    "exampleEn": "My cousin brother lives in Srinagar.",
+    "exampleNastaliq": "مِون پِتُر چھُ سرینَگَرَس روزان",
+    "exampleDev": "म्योन पितुर छु श्रीनगरस रोज़ान"
+  },
+  {
+    "en": "to stand up",
+    "roman": "thod wothun",
+    "nastaliq": "تھۆد وۆتھُن",
+    "dev": "थॊद वॊथुन",
+    "category": "Verbs",
+    "exampleRoman": "thod wothyiv meherbani kərith",
+    "exampleEn": "Please stand up respectfully.",
+    "exampleNastaliq": "تھۆد وۆتھِیو مِہرَبٲنی کٔرِتھ",
+    "exampleDev": "थॊद वॊथिव मेहरबानी कऺरिथ"
+  },
+  {
+    "en": "to sleep",
+    "roman": "shongun",
+    "nastaliq": "شۆنٛگُن",
+    "dev": "शॊंगुन",
+    "category": "Verbs",
+    "exampleRoman": "raatas chhi lukh shongaan",
+    "exampleEn": "People sleep peacefully at night.",
+    "exampleNastaliq": "راتَس چھِ لوٗکھ شۆنٛگان",
+    "exampleDev": "रातस छि लूख शॊंगान"
+  },
+  {
+    "en": "help",
+    "roman": "madath",
+    "nastaliq": "مَدَتھ",
+    "dev": "मदद",
+    "category": "Society",
+    "exampleRoman": "gariban kariyiv madath",
+    "exampleEn": "Help the needy with kindness.",
+    "exampleNastaliq": "غَریٖبَن کٔرِیو مَدَتھ",
+    "exampleDev": "ग़रीबन करियिव मदद"
+  },
+  {
+    "en": "daily",
+    "roman": "dohay",
+    "nastaliq": "دۄہے",
+    "dev": "दॊहय",
+    "category": "Time",
+    "exampleRoman": "dohay pariv koshur",
+    "exampleEn": "Practice Kashmiri everyday.",
+    "exampleNastaliq": "دۄہے پَرِیو کٲشُر",
+    "exampleDev": "दॊहय परिव कऻशुर"
+  },
+  {
+    "en": "busy",
+    "roman": "aavur",
+    "nastaliq": "آوُر",
+    "dev": "आवुर",
+    "category": "Qualities",
+    "exampleRoman": "az chhus bi setha aavur",
+    "exampleEn": "I am very busy with work today.",
+    "exampleNastaliq": "اَز چھُس بِہ سیٖٹھا آوُر",
+    "exampleDev": "आज छुस बॖ सेठा आवुर"
+  },
+  {
+    "en": "to call / shout out",
+    "roman": "ālav karun",
+    "nastaliq": "آلَو کَرُن",
+    "dev": "आलव करुन",
+    "category": "Verbs",
+    "exampleRoman": "tas kariyiv ālav",
+    "exampleEn": "Call him over.",
+    "exampleNastaliq": "تٔس کٔرِیو آلَو",
+    "exampleDev": "तस करियिव आलव"
+  },
+  {
+    "en": "stranger",
+    "roman": "nazānu",
+    "nastaliq": "نازانُو",
+    "dev": "नाज़ानू",
+    "category": "People",
+    "exampleRoman": "nazānas ti kariyiv meherbani",
+    "exampleEn": "Show hospitality even to an unknown stranger.",
+    "exampleNastaliq": "نازانَس تہِ کٔرِیو مِہرَبٲنی",
+    "exampleDev": "नाज़ानस त करियिव मेहरबानी"
+  },
+  {
+    "en": "nothing",
+    "roman": "keheen",
+    "nastaliq": "کہیٖن",
+    "dev": "कीन",
+    "category": "General",
+    "exampleRoman": "keheen chhune parvaai",
+    "exampleEn": "You're welcome / No trouble at all (reply to thank you).",
+    "exampleNastaliq": "کہیٖن چھُنہٕ پَرواے",
+    "exampleDev": "कीन छुने परवाय"
+  },
+  {
+    "en": "straight",
+    "roman": "syod",
+    "nastaliq": "سیۆد",
+    "dev": "स्योद",
+    "category": "Qualities",
+    "exampleRoman": "syod baheev meherbani kərith",
+    "exampleEn": "Please sit straight and comfortably.",
+    "exampleNastaliq": "سیۆد بٔہیٖو مِہرَبٲنی کٔرِتھ",
+    "exampleDev": "स्योद बहिव मेहरबानी कऺरिथ"
+  },
+  {
+    "en": "to ask",
+    "roman": "pruchhun",
+    "nastaliq": "پُرژھُن",
+    "dev": "प्रुछुन",
+    "category": "Verbs",
+    "exampleRoman": "wath pruchhyiv",
+    "exampleEn": "Ask for directions to the path.",
+    "exampleNastaliq": "وَتھ پُرژھِیو",
+    "exampleDev": "वथ प्रुछ़िव"
   }
 ]

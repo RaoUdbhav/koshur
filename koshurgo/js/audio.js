@@ -421,6 +421,26 @@ class KoshurAudioEngine {
           { speaker: 'Elder', koshur: 'School koota door chhu tuhndis gharas nish?', meaning: 'How far is the school from your home?', audio: 'School koota door chhu tuhndis gharas nish?' },
           { speaker: 'Student', koshur: 'Khabur-kun sadke peth, faqt daah minute.', meaning: 'Along the road to the left, only ten minutes walk.', audio: 'Khabur-kun sadke peth, faqt daah minute.' }
         ]
+      },
+      {
+        title: 'Polite Kashmiri Etiquette & Gratitude (Adab ti Shukriya)',
+        situation: 'Saying thank you, asking for pure drinking water, and hospitality.',
+        lines: [
+          { speaker: 'Traveller', koshur: 'Shukriya haz, tohi kərith setha madath!', meaning: 'Thank you very much, you helped so generously!', audio: 'Shukriya haz, tohi kərith setha madath!' },
+          { speaker: 'Local', koshur: 'Keheen chhune parvaai haz, saanis gom-as manz chhu tuhnd swaagat!', meaning: 'No trouble at all, you are warmly welcome to our village!', audio: 'Keheen chhune parvaai haz, saanis gom-as manz chhu tuhnd swaagat!' },
+          { speaker: 'Traveller', koshur: 'Me chhu treysh lagech, kahan chhu saaf aab?', meaning: 'I am thirsty, where can I find fresh spring water?', audio: 'Me chhu treysh lagech, kahan chhu saaf aab?' },
+          { speaker: 'Local', koshur: 'Huti chashma-as peth valiv, shifa aab chhu!', meaning: 'Come to the spring over there, the mountain water is pure and refreshing!', audio: 'Huti chashma-as peth valiv, shifa aab chhu!' }
+        ]
+      },
+      {
+        title: 'Family & Relatives (Khaandaan ti Rishtedaar)',
+        situation: 'Sharing family updates and inquiring about siblings and children.',
+        lines: [
+          { speaker: 'Friend', koshur: 'Tuhnd netchuv ti kūṛ chhivaa school gatsaan?', meaning: 'Do your son and daughter go to school?', audio: 'Tuhnd netchuv ti kūṛ chhivaa school gatsaan?' },
+          { speaker: 'Parent', koshur: 'Ahan haz, netchuv chhu hoshiyaar ti kūṛ chhi kitaab paraan.', meaning: 'Yes, my son is clever and my daughter loves reading books.', audio: 'Ahan haz, netchuv chhu hoshiyaar ti kūṛ chhi kitaab paraan.' },
+          { speaker: 'Friend', koshur: 'Tuhndi beni ti məəl chhaa theek?', meaning: 'Are your sister and father in good health?', audio: 'Tuhndi beni ti məəl chhaa theek?' },
+          { speaker: 'Parent', koshur: 'Shukur khudaayas, saari chhi theek ti khosh!', meaning: 'Praise be to God, everyone at home is healthy and happy!', audio: 'Shukur khudaayas, saari chhi theek ti khosh!' }
+        ]
       }
     ];
   }
