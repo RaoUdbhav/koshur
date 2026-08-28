@@ -22,6 +22,7 @@ class KoshurGoApp {
     this.searchQuery = '';
     this.flashcardIndex = 0;
     this.flashcardFlipped = false;
+    this.flashcardDeck = [];
     this.speedTimer = null;
     this.speedTimeLeft = 60;
     this.speedScore = 0;
@@ -835,23 +836,66 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: FLASHCARDS
+  // VIEW: FLASHCARDS (RANDOMIZED DECK)
   // ==========================================
+  shuffleFlashcards() {
+    if (!this.vocabulary || this.vocabulary.length === 0) return;
+    const deck = [...this.vocabulary];
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    this.flashcardDeck = deck;
+    this.flashcardIndex = 0;
+    this.flashcardFlipped = false;
+  }
+
   renderFlashcardsView(container) {
     if (this.vocabulary.length === 0) {
       container.innerHTML = `<p class="empty-state">Loading vocabulary deck...</p>`;
       return;
     }
 
-    const currentWord = this.vocabulary[this.flashcardIndex % this.vocabulary.length];
+    if (!this.flashcardDeck || this.flashcardDeck.length === 0) {
+      this.shuffleFlashcards();
+    }
+
+    if (this.flashcardIndex >= this.flashcardDeck.length) {
+      container.innerHTML = `
+        <div class="summary-card animate-scale-up">
+          <div class="trophy-bounce">🎴</div>
+          <h2>All ${this.flashcardDeck.length} Cards Completed!</h2>
+          <p class="summary-subtitle">Shabash! You reviewed all words in this randomized session.</p>
+          <div class="summary-actions" style="margin-top:20px;">
+            <button type="button" id="btn-fc-reshuffle" class="btn-duo btn-primary btn-lg">
+              🔀 Shuffle & Practice Again
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('btn-fc-reshuffle').addEventListener('click', () => {
+        window.koshurAudio.playTap();
+        this.shuffleFlashcards();
+        this.renderFlashcardsView(container);
+      });
+      return;
+    }
+
+    const currentWord = this.flashcardDeck[this.flashcardIndex];
     const script = window.koshurGamification.state.scriptMode || 'roman';
     const mainKoshur = (script === 'dev' && currentWord.dev) ? currentWord.dev : (script === 'nastaliq' && currentWord.nastaliq) ? currentWord.nastaliq : currentWord.roman;
 
     container.innerHTML = `
       <div class="flashcard-deck-view animate-fade-in">
-        <header class="view-header">
-          <h2>Leitner Spaced Repetition Flashcards</h2>
-          <p>Card ${this.flashcardIndex + 1} of ${this.vocabulary.length}</p>
+        <header class="view-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2>🎴 Spaced Repetition Flashcards</h2>
+            <p>Card <strong>${this.flashcardIndex + 1}</strong> of ${this.flashcardDeck.length} · <em>Random Order</em></p>
+          </div>
+          <button type="button" id="btn-fc-shuffle" class="btn-duo" style="padding:8px 14px;font-size:13px;background:var(--bg-card);border:2px solid var(--border-color);color:var(--text-main);" title="Shuffle remaining deck in random order">
+            🔀 Shuffle
+          </button>
         </header>
 
         <div class="flashcard-scene" id="flashcard-card-elem">
@@ -887,6 +931,15 @@ class KoshurGoApp {
         if (e.target.closest('[data-speak]')) return;
         window.koshurAudio.playTap();
         this.flashcardFlipped = !this.flashcardFlipped;
+        this.renderFlashcardsView(container);
+      });
+    }
+
+    const shuffleBtn = document.getElementById('btn-fc-shuffle');
+    if (shuffleBtn) {
+      shuffleBtn.addEventListener('click', () => {
+        window.koshurAudio.playTap();
+        this.shuffleFlashcards();
         this.renderFlashcardsView(container);
       });
     }
