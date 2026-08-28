@@ -2951,5 +2951,49 @@
     "exampleEn": "Ask for directions to the path.",
     "exampleNastaliq": "وَتھ پُرژھِیو",
     "exampleDev": "वथ प्रुछ़िव"
+  },
+  {
+    "en": "clothes",
+    "roman": "pālav",
+    "nastaliq": "پالَو",
+    "dev": "पालव",
+    "category": "General",
+    "exampleRoman": "nov pālav lagəəv az",
+    "exampleEn": "Wear new clean clothes today.",
+    "exampleNastaliq": "نۆو پالَو لَگٲو اَز",
+    "exampleDev": "नॊव पालव लगऻव आज"
+  },
+  {
+    "en": "cap",
+    "roman": "tōp’",
+    "nastaliq": "ٹوپ",
+    "dev": "टोप",
+    "category": "Culture",
+    "exampleRoman": "koshur tōp’ chhi khoobsurat",
+    "exampleEn": "The traditional Kashmiri cap is beautifully embroidered.",
+    "exampleNastaliq": "کٲشُر ٹوپ چھِ خوٗبصوٗرَت",
+    "exampleDev": "कऻशुर टोप छि ख़ूबसूरत"
+  },
+  {
+    "en": "pillow",
+    "roman": "shandgund",
+    "nastaliq": "شَنٛدگُنٛڈ",
+    "dev": "शंदगुंड",
+    "category": "General",
+    "exampleRoman": "shandgund thaviv kall-as tal",
+    "exampleEn": "Place the soft pillow under your head.",
+    "exampleNastaliq": "شَنٛدگُنٛڈ تھاوِیو کَلَس تَل",
+    "exampleDev": "शंदगुंड थाविव कलस तल"
+  },
+  {
+    "en": "sheet / blanket",
+    "roman": "chādar",
+    "nastaliq": "چادَر",
+    "dev": "चादर",
+    "category": "General",
+    "exampleRoman": "garam chādar chhi wandas fayidemand",
+    "exampleEn": "A warm blanket is useful in winter.",
+    "exampleNastaliq": "گَرَم چادَر چھِ وَندَس فایدہٕ مَند",
+    "exampleDev": "गर्म चादर छि वंदस फ़ायदेमंद"
   }
 ]

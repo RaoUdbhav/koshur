@@ -38,7 +38,7 @@ KoshurGo is built upon the **10 Core Duolingo Learning Experience Pillars** adap
    - 🎹 **The 16 Kashmiri Vowels (Achar) Masterclass**: Interactive audio grid for all short, long, and centralized vowels (*ɨ, ɨɨ, ə, əə, ɔ*).
    - 💬 **Native Conversational Audio Player**: 12 Interactive dialogue drills (*Bazaar Bargaining*, *Noon Chai & Hospitality*, *Meeting Friends*, *Road Navigation*, *Village Inquiries*, *Community Healthcare*, *Valley Weather*, *Hospitality & Safe Journeys*, *Meeting Neighbors*, *School & Village Education*, *Polite Etiquette & Gratitude*, and *Family & Relatives*) with line-by-line speech and slow playback.
 10. **Chinar Bazaar & Gamification**: In-app shop with Streak Freezes, Heart Refills, and Kashmiri cultural badges.
-11. **Full Reference Library**: Includes **260 hand-checked vocabulary words** across 13 categories and all **1,330 Kashmiri proverbs** by Omkar N. Koul (2006).
+11. **Full Reference Library**: Includes **264 hand-checked vocabulary words** across 13 categories and all **1,330 Kashmiri proverbs** by Omkar N. Koul (2006).
 12. **Preserved Classic Site**: The legacy dictionary and reference portal is fully preserved in `learnkoshur_site/`.
 
 ---
