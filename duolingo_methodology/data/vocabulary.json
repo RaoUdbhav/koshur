@@ -2654,5 +2654,137 @@
     "exampleEn": "Please turn around.",
     "exampleNastaliq": "پَتھ کُن پھیٖرِیو",
     "exampleDev": "पथकुन फेरिव"
+  },
+  {
+    "en": "hospital",
+    "roman": "aspatāl",
+    "nastaliq": "ہَسپَتَال",
+    "dev": "अस्पताल्",
+    "category": "Places",
+    "exampleRoman": "tuhndis gāmas manz chhaa aspatāl?",
+    "exampleEn": "Is there a hospital in your village?",
+    "exampleNastaliq": "تُہنٛدِس گامَس مَنٛز چھا ہَسپَتَال؟",
+    "exampleDev": "तुहंदिस गामस मंज़ छा अस्पताल्?"
+  },
+  {
+    "en": "people",
+    "roman": "lookh",
+    "nastaliq": "لوٗکھ",
+    "dev": "लूख",
+    "category": "People",
+    "exampleRoman": "tuhndis gāmas manz kəət’ lookh chhi rozaan?",
+    "exampleEn": "How many people reside in your village?",
+    "exampleNastaliq": "تُہنٛدِس گامَس مَنٛز کٲتؠ لوٗکھ چھِ روزان؟",
+    "exampleDev": "तुहंदिस गामस मंज़ कऻत्य लूख छि रोज़ान?"
+  },
+  {
+    "en": "mosque",
+    "roman": "masjid",
+    "nastaliq": "مَسجِد",
+    "dev": "मस्जिद",
+    "category": "Places",
+    "exampleRoman": "tuhndis gāmas manz kətse masjid chhi?",
+    "exampleEn": "How many mosques are in your village?",
+    "exampleNastaliq": "تُہنٛدِس گامَس مَنٛز کٔژے مَسجِد چھِ؟",
+    "exampleDev": "तुहंदिस गामस मंज़ कॖचे मस्जिद छि?"
+  },
+  {
+    "en": "to recognize",
+    "roman": "parzanun",
+    "nastaliq": "پَرزَنُن",
+    "dev": "पर्ज़नुन",
+    "category": "Verbs",
+    "exampleRoman": "yi parzənaaviv meherbani kərith",
+    "exampleEn": "Please recognize and identify this.",
+    "exampleNastaliq": "یِہ پَرزٕناوِیو مِہرَبٲنی کٔرِتھ",
+    "exampleDev": "यिह पर्ज़नाविव मेहरबानी कऺरिथ"
+  },
+  {
+    "en": "left side",
+    "roman": "khabur-kun",
+    "nastaliq": "کھۆبوُر کُن",
+    "dev": "खॊबुरकुन",
+    "category": "General",
+    "exampleRoman": "khabur-kun phiryiv",
+    "exampleEn": "Turn to the left side.",
+    "exampleNastaliq": "کھۆبوُر کُن پھیٖرِیو",
+    "exampleDev": "खॊबुरकुन फेरिव"
+  },
+  {
+    "en": "right side",
+    "roman": "dachhin-kun",
+    "nastaliq": "دَچھِن کُن",
+    "dev": "दछिनकुन",
+    "category": "General",
+    "exampleRoman": "dachhin-kun chhu asul wath",
+    "exampleEn": "The main road is on the right side.",
+    "exampleNastaliq": "دَچھِن کُن چھُ اَصٕل وَتھ",
+    "exampleDev": "दछिनकुन छु असुल वथ"
+  },
+  {
+    "en": "close friend",
+    "roman": "kareebi dost",
+    "nastaliq": "قَریٖبی دوست",
+    "dev": "क़रीबी दोस्त",
+    "category": "Society",
+    "exampleRoman": "az-peth gav tohi myon kareebi dost",
+    "exampleEn": "From today onward, you are my close friend.",
+    "exampleNastaliq": "اَز پیٚٹھ گۆو تُہہِ مِون قَریٖبی دوست",
+    "exampleDev": "आज पेठ गव तुहि म्योन क़रीबी दोस्त"
+  },
+  {
+    "en": "to enter / come in",
+    "roman": "atshun",
+    "nastaliq": "اَتھشُن",
+    "dev": "अछ़ुन",
+    "category": "Verbs",
+    "exampleRoman": "andar atshyiv",
+    "exampleEn": "Please come inside.",
+    "exampleNastaliq": "اَندَر اَتھشِیو",
+    "exampleDev": "अंदर अच्छियिव"
+  },
+  {
+    "en": "how much / how far",
+    "roman": "koota",
+    "nastaliq": "کوٗتا",
+    "dev": "कूता",
+    "category": "General",
+    "exampleRoman": "school koota door chhu tuhndis gharas nish?",
+    "exampleEn": "How far is the school from your home?",
+    "exampleNastaliq": "سکول کوٗتا دوٗر چھُ تُہنٛدِس گَرَس نِش؟",
+    "exampleDev": "स्कूल कूता दूर छु तुहंदिस गरस निश?"
+  },
+  {
+    "en": "goodbye",
+    "roman": "alvida",
+    "nastaliq": "اَلوِداع",
+    "dev": "अलविदा",
+    "category": "Society",
+    "exampleRoman": "alvida, khudaay roozin saathi",
+    "exampleEn": "Goodbye, may God always accompany you.",
+    "exampleNastaliq": "اَلوِداع، خُداے روٗزِن ساتھِی",
+    "exampleDev": "अलविदा, ख़ुदाय रोज़िन साथी"
+  },
+  {
+    "en": "at this time",
+    "roman": "wunkeennas",
+    "nastaliq": "وُنکؠنَس",
+    "dev": "वुनक्यनस",
+    "category": "Time",
+    "exampleRoman": "wunkeennas chhu shaamuk wakt",
+    "exampleEn": "Right now it is evening time.",
+    "exampleNastaliq": "وُنکؠنَس چھُ شامُک وَقَت",
+    "exampleDev": "वुनक्यनस छु शामुक वक़्त"
+  },
+  {
+    "en": "to fear",
+    "roman": "khotshun",
+    "nastaliq": "کھۆژُن",
+    "dev": "खॊछ़ुन",
+    "category": "Verbs",
+    "exampleRoman": "khotshiv ma, saari chhu theek",
+    "exampleEn": "Do not worry or fear, everything is well.",
+    "exampleNastaliq": "کھۆژِیو مَہ، ساری چھُ ٹھیٖک",
+    "exampleDev": "खॊछ़िव मह, सारी छु ठीक"
   }
 ]

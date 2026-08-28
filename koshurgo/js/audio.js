@@ -401,6 +401,26 @@ class KoshurAudioEngine {
           { speaker: 'Guest', koshur: 'Yi chhu myon phone number. Agar mouqa aav, beyi samkhav.', meaning: 'Here is my phone number. If chance permits, we shall meet again.', audio: 'Yi chhu myon phone number. Agar mouqa aav, beyi samkhav.' },
           { speaker: 'Host', koshur: 'Khudaay kərinav tuhinz rachh, neryiv khudaayas havaal!', meaning: 'May the Almighty protect you, have a blessed and safe journey!', audio: 'Khudaay kərinav tuhinz rachh, neryiv khudaayas havaal!' }
         ]
+      },
+      {
+        title: 'Meeting Neighbors & Community (Hamsayan Seeth)',
+        situation: 'Greeting community members and inquiring about family health.',
+        lines: [
+          { speaker: 'Neighbor', koshur: 'As-salāmu ʿalaykum janaab! Tohi chhivaa theek?', meaning: 'Peace be upon you sir! Are you in good health?', audio: 'As-salāmu ʿalaykum janaab! Tohi chhivaa theek?' },
+          { speaker: 'Visitor', koshur: 'Wa ʿalaykumu s-salām! Khosh paeth chhus. Ghar-as manz chhaa saari theek?', meaning: 'And unto you peace! I am doing well. Is everyone at home healthy?', audio: 'Wa ʿalaykumu s-salām! Khosh paeth chhus. Ghar-as manz chhaa saari theek?' },
+          { speaker: 'Neighbor', koshur: 'Ahan haz, saari chhi theek. Andar atshyiv, chai cheyiv!', meaning: 'Yes sir, all are healthy. Please come inside for tea!', audio: 'Ahan haz, saari chhi theek. Andar atshyiv, chai cheyiv!' },
+          { speaker: 'Visitor', koshur: 'Az-peth gav tohi myon kareebi dost!', meaning: 'From today, you are my dear friend!', audio: 'Az-peth gav tohi myon kareebi dost!' }
+        ]
+      },
+      {
+        title: 'School & Village Education (Mokteb ti Taleem)',
+        situation: 'Asking a young student about their school and daily studies.',
+        lines: [
+          { speaker: 'Elder', koshur: 'Tohi kamis class-as manz chhuv paraan?', meaning: 'Which class or grade do you study in?', audio: 'Tohi kamis class-as manz chhuv paraan?' },
+          { speaker: 'Student', koshur: 'Bi chhus satimis class-as manz paraan.', meaning: 'I study in the seventh grade.', audio: 'Bi chhus satimis class-as manz paraan.' },
+          { speaker: 'Elder', koshur: 'School koota door chhu tuhndis gharas nish?', meaning: 'How far is the school from your home?', audio: 'School koota door chhu tuhndis gharas nish?' },
+          { speaker: 'Student', koshur: 'Khabur-kun sadke peth, faqt daah minute.', meaning: 'Along the road to the left, only ten minutes walk.', audio: 'Khabur-kun sadke peth, faqt daah minute.' }
+        ]
       }
     ];
   }
