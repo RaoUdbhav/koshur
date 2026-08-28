@@ -2522,5 +2522,137 @@
     "exampleEn": "Please do not become angry.",
     "exampleNastaliq": "مِہرَبٲنی کٔرِتھ مَہ کٔرِیو زَہَر",
     "exampleDev": "मेहरबानी कऺरिथ मह करिव ज़हर"
+  },
+  {
+    "en": "luggage / belongings",
+    "roman": "samān",
+    "nastaliq": "سامان",
+    "dev": "सामान",
+    "category": "General",
+    "exampleRoman": "yi samān kəmsund chhu?",
+    "exampleEn": "Whose luggage/belonging is this?",
+    "exampleNastaliq": "یِہ سامان کٔمؠ سُنٛد چھُ؟",
+    "exampleDev": "यिह सामान कऺमिसुंद छु?"
+  },
+  {
+    "en": "protection",
+    "roman": "rachh",
+    "nastaliq": "رَچھ",
+    "dev": "रच्छ",
+    "category": "Society",
+    "exampleRoman": "khudaay kərinav tuhinz rachh",
+    "exampleEn": "May God keep you safe and protected.",
+    "exampleNastaliq": "خُداے کٔرِناو تُہنٛز رَچھ",
+    "exampleDev": "ख़ुदाय करिनव तुहिंज़ रच्छ"
+  },
+  {
+    "en": "awareness / idea",
+    "roman": "payi",
+    "nastaliq": "پَے",
+    "dev": "पय",
+    "category": "General",
+    "exampleRoman": "me chhu ne payi",
+    "exampleEn": "I do not know / I have no idea.",
+    "exampleNastaliq": "مےٚ چھُ نہٕ پَے",
+    "exampleDev": "मे छु न पय"
+  },
+  {
+    "en": "understanding",
+    "roman": "fikir",
+    "nastaliq": "فِکِر",
+    "dev": "फ़िकिर",
+    "category": "Society",
+    "exampleRoman": "tohi chhaa fikiri taraan?",
+    "exampleEn": "Are you able to understand?",
+    "exampleNastaliq": "تُہہِ چھا فِکِرِ تَرَن؟",
+    "exampleDev": "तुहि छा फ़िकिरि तरन?"
+  },
+  {
+    "en": "trouble / inconvenience",
+    "roman": "takleef",
+    "nastaliq": "تَکلیٖف",
+    "dev": "तकलीफ़",
+    "category": "Society",
+    "exampleRoman": "takleef-as khatire chha maafi",
+    "exampleEn": "Pardon for the inconvenience.",
+    "exampleNastaliq": "تَکلیٖفَس خاطِرٕ چھا مَافی",
+    "exampleDev": "तकलीफ़स क़ातिर छा माफ़ी"
+  },
+  {
+    "en": "village head",
+    "roman": "muqdam",
+    "nastaliq": "مُقدَم",
+    "dev": "मुक़दम",
+    "category": "People",
+    "exampleRoman": "yath gāmas manz kus chhu muqdam?",
+    "exampleEn": "Who is the village headman in this village?",
+    "exampleNastaliq": "یَتھ گامَس مَنٛز کُس چھُ مُقدَم؟",
+    "exampleDev": "यथ गामस मंज़ कुस छु मुक़दम?"
+  },
+  {
+    "en": "to meet",
+    "roman": "samkhun",
+    "nastaliq": "سَمکھُن",
+    "dev": "समखुन",
+    "category": "Verbs",
+    "exampleRoman": "agar mouqa aav, beyi samkhav",
+    "exampleEn": "If opportunity permits, we shall meet again.",
+    "exampleNastaliq": "اَگَر مَوقعہٕ آو، بیٚیہِ سَمکھَو",
+    "exampleDev": "अगर मौक़ा आव, बॆयि समखव"
+  },
+  {
+    "en": "opportunity",
+    "roman": "mouqa",
+    "nastaliq": "مَوقعہٕ",
+    "dev": "मौक़ा",
+    "category": "Society",
+    "exampleRoman": "kashmeer vuchhne-huk aav asul mouqa",
+    "exampleEn": "We got a wonderful opportunity to visit Kashmir.",
+    "exampleNastaliq": "کٔشیٖر وُچھنَہ ہُک آو اَصٕل مَوقعہٕ",
+    "exampleDev": "कशीर वुछ़नहुक आव असुल मौक़ा"
+  },
+  {
+    "en": "english language",
+    "roman": "angreezi",
+    "nastaliq": "اَنٛگریٖزی",
+    "dev": "अंग्रेज़ी",
+    "category": "Culture",
+    "exampleRoman": "tohi chhivaa angreezi bolaan?",
+    "exampleEn": "Do you speak English?",
+    "exampleNastaliq": "تُہہِ چھِوا اَنٛگریٖزی بولان؟",
+    "exampleDev": "तुहि छिवा अंग्रेज़ी बोलान?"
+  },
+  {
+    "en": "again",
+    "roman": "dobaara",
+    "nastaliq": "دوبارَہ",
+    "dev": "दोबारा",
+    "category": "General",
+    "exampleRoman": "tohi hekivaa dobaara vanith?",
+    "exampleEn": "Can you please say it again?",
+    "exampleNastaliq": "تُہہِ ہؠکِوا دوبارَہ وَنِتھ؟",
+    "exampleDev": "तुहि ह्यकिवा दोबारा वनिथ?"
+  },
+  {
+    "en": "to show",
+    "roman": "haavun",
+    "nastaliq": "ہاوُن",
+    "dev": "हावुन",
+    "category": "Verbs",
+    "exampleRoman": "wath haaviv meherbani kərith",
+    "exampleEn": "Please show the path.",
+    "exampleNastaliq": "وَتھ ہاوِیو مِہرَبٲنی کٔرِتھ",
+    "exampleDev": "वथ हाविव मेहरबानी कऺरिथ"
+  },
+  {
+    "en": "to turn back",
+    "roman": "pathkun pherun",
+    "nastaliq": "پَتھ کُن پھیٖرُن",
+    "dev": "पथकुन फेरुन",
+    "category": "Verbs",
+    "exampleRoman": "pathkun phiryiv",
+    "exampleEn": "Please turn around.",
+    "exampleNastaliq": "پَتھ کُن پھیٖرِیو",
+    "exampleDev": "पथकुन फेरिव"
   }
 ]

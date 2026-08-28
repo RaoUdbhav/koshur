@@ -382,6 +382,25 @@ class KoshurAudioEngine {
           { speaker: 'Family', koshur: 'Meherbani kərith dyiv imes dawaah.', meaning: 'Please give him soothing medicine.', audio: 'Meherbani kərith dyiv imes dawaah.' },
           { speaker: 'Doctor', koshur: 'Asi karav mushkil door karnech koshish, aaraam kariyiv.', meaning: 'We will do our best to help relieve the pain, please rest.', audio: 'Asi karav mushkil door karnech koshish, aaraam kariyiv.' }
         ]
+      },
+      {
+        title: 'Weather & Daily Conversation (Mousam ti Rozmarrah Baath)',
+        situation: 'Chatting about Valley weather, rain, and language understanding.',
+        lines: [
+          { speaker: 'Traveller', koshur: 'Az maa peyi rood?', meaning: 'Is there any chance of rain today?', audio: 'Az maa peyi rood?' },
+          { speaker: 'Local', koshur: 'Na haz, az chhu aasmaan saaf ti asul taaph.', meaning: 'No sir, the sky is clear with pleasant sunshine.', audio: 'Na haz, az chhu aasmaan saaf ti asul taaph.' },
+          { speaker: 'Traveller', koshur: 'Tohi chhivaa angreezi bolaan?', meaning: 'Do you speak English?', audio: 'Tohi chhivaa angreezi bolaan?' },
+          { speaker: 'Local', koshur: 'Kãh kãh lafz haz, tohi hekivaa dobaara vanith?', meaning: 'A few words sir, could you please say it again?', audio: 'Kãh kãh lafz haz, tohi hekivaa dobaara vanith?' }
+        ]
+      },
+      {
+        title: 'Warm Hospitality & Safe Journeys (Rukhsat ti Dua)',
+        situation: 'Exchanging blessings and phone numbers with a host before traveling.',
+        lines: [
+          { speaker: 'Host', koshur: 'Kunsaat yiyiziv saanis gharas manz!', meaning: 'Please visit our home again soon!', audio: 'Kunsaat yiyiziv saanis gharas manz!' },
+          { speaker: 'Guest', koshur: 'Yi chhu myon phone number. Agar mouqa aav, beyi samkhav.', meaning: 'Here is my phone number. If chance permits, we shall meet again.', audio: 'Yi chhu myon phone number. Agar mouqa aav, beyi samkhav.' },
+          { speaker: 'Host', koshur: 'Khudaay kərinav tuhinz rachh, neryiv khudaayas havaal!', meaning: 'May the Almighty protect you, have a blessed and safe journey!', audio: 'Khudaay kərinav tuhinz rachh, neryiv khudaayas havaal!' }
+        ]
       }
     ];
   }
