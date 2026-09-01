@@ -23,6 +23,7 @@ class KoshurGoApp {
     this.flashcardIndex = 0;
     this.flashcardFlipped = false;
     this.flashcardDeck = [];
+    this.proverbViewOption = 'all'; // 'all', 'roman', 'dev', 'hindi'
     this.speedTimer = null;
     this.speedTimeLeft = 60;
     this.speedScore = 0;
@@ -479,7 +480,7 @@ class KoshurGoApp {
   }
 
   // ==========================================
-  // VIEW: PROVERBS (ENHANCED CULTURAL ENGINE)
+  // VIEW: PROVERBS (SCRATCH REBUILT: ROMAN, HINDI & DEVANAGARI)
   // ==========================================
   getProverbOfTheDay() {
     if (!this.proverbs || this.proverbs.length === 0) return null;
@@ -492,39 +493,35 @@ class KoshurGoApp {
   }
 
   renderProverbsView(container) {
-    const script = window.koshurGamification.state.scriptMode || 'roman';
     const potd = this.getProverbOfTheDay();
+    const activeView = this.proverbViewOption || 'all';
 
     const themes = [
-      { id: 'All', label: 'All (1,330)' },
-      { id: 'Wisdom', label: '🧘 Wisdom & Life', keywords: ['friend', 'faith', 'mind', 'heart', 'man', 'world', 'truth', 'life', 'god', 'time', 'good'] },
-      { id: 'Humor', label: '🎭 Humor & Irony', keywords: ['blind', 'fool', 'dog', 'thief', 'donkey', 'cat', 'mouse', 'vomit', 'mouth', 'eat'] },
-      { id: 'Nature', label: '🏔️ Nature & Kashmir', keywords: ['river', 'water', 'tree', 'snow', 'sun', 'fire', 'bird', 'flower', 'fish', 'stone', 'sum', 'kɔli'] },
-      { id: 'Food', label: '🍲 Food & Wazwan', keywords: ['rice', 'bread', 'tea', 'milk', 'apple', 'meat', 'gəza', 'pot', 'meal', 'tsot'] },
-      { id: 'Money', label: '💰 Money & Trade', keywords: ['money', 'debt', 'gold', 'silver', 'buy', 'sell', 'price', 'work', 'rich', 'poor'] },
-      { id: 'Family', label: '👨‍👩‍👧 Family & Society', keywords: ['mother', 'father', 'son', 'daughter', 'brother', 'sister', 'wife', 'neighbor', 'elder'] }
+      { id: 'All', label: `All (${this.proverbs.length})` },
+      { id: 'Wisdom', label: '🧘 Wisdom (जीवन ज्ञान)' },
+      { id: 'Nature', label: '🏔️ Nature (प्रकृति और कश्मीर)' },
+      { id: 'Family', label: '👨‍👩‍👧 Family (परिवार और अपने)' },
+      { id: 'Food', label: '🍲 Food (खान-पान और स्वाद)' },
+      { id: 'Society', label: '🤝 Society (समाज और रिश्ते)' },
+      { id: 'Life', label: '⏳ Life (ज़िंदगी और वक्त)' },
+      { id: 'Humor', label: '🎭 Humor (हास्य और व्यंग्य)' }
     ];
 
     const currentTheme = this.selectedCategory || 'All';
-    const themeObj = themes.find(t => t.id === currentTheme);
+    const q = this.searchQuery.toLowerCase().trim();
 
-    const q = this.searchQuery.toLowerCase();
     const filtered = this.proverbs.filter(p => {
-      // Search match
-      const matchQ = !q || (p.roman && p.roman.toLowerCase().includes(q)) ||
-        (p.literal && p.literal.toLowerCase().includes(q)) ||
-        (p.meaning && p.meaning.toLowerCase().includes(q)) ||
-        (p.dev && p.dev.includes(q));
+      const matchQ = !q ||
+        (p.roman && p.roman.toLowerCase().includes(q)) ||
+        (p.dev && p.dev.includes(q)) ||
+        (p.nastaliq && p.nastaliq.includes(q)) ||
+        (p.hindi && p.hindi.toLowerCase().includes(q)) ||
+        (p.english && p.english.toLowerCase().includes(q)) ||
+        (p.category && p.category.toLowerCase().includes(q));
 
-      // Theme match
-      let matchTheme = true;
-      if (themeObj && themeObj.keywords) {
-        const fullText = `${p.roman} ${p.literal} ${p.meaning}`.toLowerCase();
-        matchTheme = themeObj.keywords.some(kw => fullText.includes(kw));
-      }
-
+      const matchTheme = (currentTheme === 'All') || (p.category && p.category.toLowerCase() === currentTheme.toLowerCase());
       return matchQ && matchTheme;
-    }).slice(0, 75);
+    });
 
     container.innerHTML = `
       <div class="proverbs-container animate-fade-in">
@@ -533,36 +530,71 @@ class KoshurGoApp {
           <div class="potd-hero-card">
             <div class="potd-badge">
               <span>🌟 Proverb of the Day · روٗزانہٕ کَہاوَت</span>
-              <button type="button" class="btn-copy-card" id="btn-copy-potd" title="Copy Card">📋 Share</button>
+              <button type="button" class="btn-copy-card" id="btn-copy-potd" title="Copy Proverb">📋 Share</button>
             </div>
-            <div class="potd-koshur-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">
-              ${escapeHTML(script === 'dev' && potd.dev ? potd.dev : potd.roman)}
+            
+            <div class="potd-koshur-text" style="font-size:22px;font-weight:800;color:var(--text-main);margin:10px 0 4px;">
+              ${escapeHTML(potd.roman)}
             </div>
-            <div class="potd-details">
-              <p class="potd-literal"><strong>Literal:</strong> "${escapeHTML(potd.literal || potd.meaning)}"</p>
-              ${potd.meaning ? `<p class="potd-meaning"><strong>Wisdom:</strong> ${escapeHTML(potd.meaning)}</p>` : ''}
+            <div style="font-size:18px;font-weight:700;color:var(--pine-main);margin-bottom:6px;">
+              ${escapeHTML(potd.dev)}
             </div>
-            <div class="potd-footer">
+            <div class="prov-pronunciation-pill" style="display:inline-block;margin-bottom:10px;">
+              🗣️ ${escapeHTML(potd.pronunciation || potd.roman)}
+            </div>
+
+            <div class="prov-hindi-box" style="margin-top:4px;">
+              <span class="prov-hindi-label">🇮🇳 हिन्दी भावार्थ:</span>
+              <span>"${escapeHTML(potd.hindi)}"</span>
+            </div>
+
+            <div class="potd-details" style="margin-top:6px;">
+              <p class="potd-literal"><strong>English:</strong> "${escapeHTML(potd.english)}"</p>
+            </div>
+
+            <div class="potd-footer" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
               <button type="button" class="btn-audio-pill" data-speak="${escapeHTML(potd.roman)}">
-                🔊 Listen Pronunciation
+                🔊 Listen Normal
               </button>
-              <span class="potd-page">Omkar N. Koul · Page ${potd.page || 1}</span>
+              <button type="button" class="btn-audio-pill" data-speak="${escapeHTML(potd.roman)}" data-slow="true" style="background:rgba(234,160,35,0.15);border:2px solid var(--saffron-main);color:var(--text-main);">
+                🐢 Listen Slow
+              </button>
+              <span class="potd-page">Kashmiri Folk Wisdom · #${potd.id}</span>
             </div>
           </div>
         ` : ''}
 
         <!-- Header & Action Row -->
-        <header class="view-header">
+        <header class="view-header" style="margin-top:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
             <div>
-              <h2>Kashmiri Proverbs (کٲشِرؠ کَہاوَت)</h2>
-              <p>Explore 1,330 proverbs of Kashmiri philosophy and culture.</p>
+              <h2>Kashmiri Proverbs (کٲشِرؠ کَہاوَت / कॉशुर कहावतें)</h2>
+              <p>Authentic Kashmiri folk wisdom with readable Roman, clean Devanagari, and natural Hindi meanings.</p>
             </div>
             <button type="button" id="btn-launch-proverb-quiz" class="btn-duo btn-success" style="padding:10px 18px;font-size:13px;">
               🎯 Proverb Challenge (+20 XP)
             </button>
           </div>
         </header>
+
+        <!-- View Options: Roman / Devanagari / Hindi Meaning / All -->
+        <div style="margin:16px 0 8px;">
+          <label style="font-size:12px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">Display Script & Translation Mode:</label>
+          <div class="prov-script-toggles">
+            <button type="button" class="prov-toggle-btn ${activeView === 'all' ? 'active' : ''}" data-view="all">
+              🎛️ All Details (सारे रूप)
+            </button>
+            <button type="button" class="prov-toggle-btn ${activeView === 'roman' ? 'active' : ''}" data-view="roman">
+              🔤 Roman (Phonetic)
+            </button>
+            <button type="button" class="prov-toggle-btn ${activeView === 'dev' ? 'active' : ''}" data-view="dev">
+              🕉️ Devanagari (कॉशुर लिपि)
+            </button>
+            <button type="button" class="prov-toggle-btn ${activeView === 'hindi' ? 'active' : ''}" data-view="hindi">
+              🇮🇳 Hindi Meaning (हिन्दी भावार्थ)
+            </button>
+          </div>
+        </div>
 
         <!-- Thematic Category Filter Pills -->
         <div class="category-pills">
@@ -575,43 +607,94 @@ class KoshurGoApp {
 
         <!-- Search Bar -->
         <div class="search-box">
-          <input type="text" id="prov-search-input" placeholder="Search proverbs by meaning, keyword, or Kashmiri..." value="${escapeHTML(this.searchQuery)}">
+          <input type="text" id="prov-search-input" placeholder="Search in Roman, Hindi, Devanagari, or English..." value="${escapeHTML(this.searchQuery)}">
         </div>
 
         <!-- Proverbs Grid -->
         <div class="proverbs-list">
-          ${filtered.length > 0 ? filtered.map((p, idx) => `
-            <div class="proverb-card">
-              <div class="prov-header">
-                <span class="prov-num">#${idx + 1}</span>
-                <div style="display:flex;gap:6px;">
-                  <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(p.roman)}" title="Listen">🔊</button>
+          ${filtered.length > 0 ? filtered.map((p) => {
+            let primaryText = p.roman;
+            let secondaryText = p.dev;
+
+            if (activeView === 'dev') {
+              primaryText = p.dev;
+              secondaryText = p.roman;
+            } else if (activeView === 'hindi') {
+              primaryText = p.hindi;
+              secondaryText = `${p.roman} · ${p.dev}`;
+            }
+
+            return `
+              <div class="proverb-card">
+                <div class="prov-header">
+                  <div class="prov-meta-left">
+                    <span class="prov-num">#${p.id}</span>
+                    <span class="prov-category-badge">${escapeHTML(p.category || 'Wisdom')}</span>
+                  </div>
+                  <div class="prov-actions">
+                    <button type="button" class="btn-audio-mini" data-speak="${escapeHTML(p.roman)}" title="Listen Normal Speed">🔊</button>
+                    <button type="button" class="btn-audio-mini btn-audio-slow-mini" data-speak="${escapeHTML(p.roman)}" data-slow="true" title="Listen Slow Turtle">🐢</button>
+                    <button type="button" class="btn-audio-mini btn-copy-single-prov" data-copy="${escapeHTML(`${p.roman}\n${p.dev}\nहिन्दी: ${p.hindi}\nEnglish: ${p.english}`)}" title="Copy Proverb">📋</button>
+                  </div>
+                </div>
+
+                <div class="prov-primary-text">${escapeHTML(primaryText)}</div>
+                ${secondaryText ? `<div class="prov-secondary-text">${escapeHTML(secondaryText)}</div>` : ''}
+
+                ${p.pronunciation ? `
+                  <div class="prov-pronunciation-pill">
+                    🗣️ Pronunciation: <em>${escapeHTML(p.pronunciation)}</em>
+                  </div>
+                ` : ''}
+
+                <div class="prov-hindi-box">
+                  <span class="prov-hindi-label">🇮🇳 हिन्दी भावार्थ:</span>
+                  <span>"${escapeHTML(p.hindi)}"</span>
+                </div>
+
+                <div class="prov-english-box">
+                  <strong>English:</strong> "${escapeHTML(p.english)}"
                 </div>
               </div>
-              <div class="prov-koshur-text ${script === 'nastaliq' ? 'koshur-rtl' : ''}">${escapeHTML(script === 'dev' && p.dev ? p.dev : p.roman)}</div>
-              <div class="prov-literal"><strong>Literal:</strong> "${escapeHTML(p.literal || p.meaning)}"</div>
-              ${p.meaning ? `<div class="prov-meaning"><strong>Meaning:</strong> ${escapeHTML(p.meaning)}</div>` : ''}
-              <div class="prov-citation">Page ${p.page || 1} · Source: Omkar N. Koul (2006)</div>
-            </div>
-          `).join('') : `
+            `;
+          }).join('') : `
             <div class="empty-state" style="text-align:center;padding:40px 20px;">
-              <p>No proverbs found for this filter. Try another keyword or category.</p>
+              <p>No proverbs found matching your search. Try another keyword or category.</p>
             </div>
           `}
         </div>
       </div>
     `;
 
+    // View option switcher listener
+    container.querySelectorAll('.prov-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.koshurAudio.playTap();
+        this.proverbViewOption = btn.dataset.view;
+        this.renderProverbsView(container);
+      });
+    });
+
     // Copy POTD listener
     const copyBtn = document.getElementById('btn-copy-potd');
     if (copyBtn && potd) {
       copyBtn.addEventListener('click', () => {
-        const text = `🍁 Kashmiri Proverb of the Day:\n"${potd.roman}"\nLiteral: ${potd.literal}\nMeaning: ${potd.meaning || potd.literal}\n— via KoshurGo`;
+        const text = `🍁 Kashmiri Proverb of the Day:\n"${potd.roman}"\n${potd.dev}\n🇮🇳 हिन्दी: ${potd.hindi}\n🇬🇧 English: ${potd.english}\n— via KoshurGo`;
         navigator.clipboard.writeText(text);
         copyBtn.textContent = 'Copied! ✨';
         setTimeout(() => { copyBtn.textContent = '📋 Share'; }, 2000);
       });
     }
+
+    // Copy individual proverb listener
+    container.querySelectorAll('.btn-copy-single-prov').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy;
+        navigator.clipboard.writeText(text);
+        btn.textContent = '✓';
+        setTimeout(() => { btn.textContent = '📋'; }, 1800);
+      });
+    });
 
     // Launch Proverb Challenge Mini-Game
     const quizBtn = document.getElementById('btn-launch-proverb-quiz');
@@ -629,7 +712,7 @@ class KoshurGoApp {
       });
     }
 
-    container.querySelectorAll('.pill-btn').forEach(btn => {
+    container.querySelectorAll('.category-pills .pill-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.selectedCategory = btn.dataset.theme;
         this.renderProverbsView(container);
@@ -640,21 +723,33 @@ class KoshurGoApp {
   launchProverbChallenge() {
     const challenges = [
       {
-        scenario: 'A person starts an ambitious task without proper preparation or tools, expecting quick success.',
-        correctProverb: 'Panun sum na sum, beyis suz kɔli (One cuts the barrage carelessly and drowns many)',
+        scenario: 'A person starts a big project without patience, expecting instant results, but an elder reminds them that good things take time.',
+        correctProverb: 'Sabras chhu mive meeth',
+        correctMeaning: 'सब्र का फल हमेशा मीठा होता है (The fruit of patience is sweet)',
         options: [
-          { roman: 'Panun sum na sum, beyis suz kɔli', meaning: 'Careless actions cause widespread trouble', correct: true },
-          { roman: 'Ãb chhu zindagāni', meaning: 'Water is life', correct: false },
-          { roman: 'Asul dost chhu modur ãb', meaning: 'A good friend is like sweet water', correct: false }
+          { roman: 'Sabras chhu mive meeth', dev: 'सबरस छु मिवे मीठ', meaning: 'सब्र का फल मीठा होता है', correct: true },
+          { roman: 'Batas peth chhu zun rozun', dev: 'बतस पॆठ छु ज़ून रोज़ुन', meaning: 'चावल पर चंद्रमा की चमक (परम सौभाग्य)', correct: false },
+          { roman: 'Nãr chhu tot', dev: 'नार छु तॊत', meaning: 'आग गर्म होती है', correct: false }
         ]
       },
       {
-        scenario: 'Someone is giving extensive advice on wealth management while being completely in debt themselves.',
-        correctProverb: 'Panun tsoonth na gatsaan, beyis ditsaan sakhawat (One has no apple for oneself, yet claims to distribute feasts)',
+        scenario: 'A person is looking all over the city for something that was right inside their own home the entire time.',
+        correctProverb: 'Gharas manz chhu aab, te nallan chhu tshondaan',
+        correctMeaning: 'घर में पानी है और नालों में तलाश (बगल में छोरा, नगर में ढिंढोरा)',
         options: [
-          { roman: 'Panun tsoonth na gatsaan, beyis ditsaan sakhawat', meaning: 'Giving what you do not have yourself', correct: true },
-          { roman: 'Ghar chhu jannat', meaning: 'Home is paradise', correct: false },
-          { roman: 'Nãr chhu tot', meaning: 'Fire is hot', correct: false }
+          { roman: 'Gharas manz chhu aab, te nallan chhu tshondaan', dev: 'घरस मंज़ छु आब, तॖ नलन छु छ़ॊन्दान', meaning: 'बगल में छोरा, नगर में ढिंढोरा', correct: true },
+          { roman: 'Panun gām chhu paristan', dev: 'पनुन गाम छु परिस्तान', meaning: 'अपना गाँव स्वर्ग जैसा है', correct: false },
+          { roman: 'Wandas chhu shīn', dev: 'वंदस छु शीन', meaning: 'सर्दियों में बर्फ पड़ती है', correct: false }
+        ]
+      },
+      {
+        scenario: 'Someone speaks with great warmth, kindness, and sweetness, and wins over people from every walk of life.',
+        correctProverb: 'Zabān chhi shirin, te duniya chhu panun',
+        correctMeaning: 'मीठी बोली से सारी दुनिया अपनी बन जाती है (Sweet tongue wins the world)',
+        options: [
+          { roman: 'Zabān chhi shirin, te duniya chhu panun', dev: 'ज़बान छि शीरीं, तॖ दुनिया छु पनुन', meaning: 'मीठी बोली से सारी दुनिया अपनी बन जाती है', correct: true },
+          { roman: 'Kaal chhu pakaan', dev: 'काल छु पकान', meaning: 'समय बीतता जाता है', correct: false },
+          { roman: 'Haakh ti gadh chhu shahi khorak', dev: 'हाख तॖ गद छु शाही ख़ॊराक़', meaning: 'साग और मछली शाही खाना है', correct: false }
         ]
       }
     ];
@@ -672,8 +767,8 @@ class KoshurGoApp {
 
         <div class="exercise-card">
           <span class="badge-type">📜 Cultural Wisdom Riddle</span>
-          <h3 class="exercise-instruction">Which authentic Kashmiri proverb best fits this real-life situation?</h3>
-          <div class="prompt-box" style="margin:20px 0;background:rgba(234,160,35,0.08);border-left:4px solid var(--saffron-main);">
+          <h3 class="exercise-instruction">Which authentic Kashmiri proverb best fits this situation?</h3>
+          <div class="prompt-box" style="margin:20px 0;background:rgba(234,160,35,0.08);border-left:4px solid var(--saffron-main);padding:14px 18px;border-radius:4px;">
             <p style="font-size:16px;line-height:1.5;"><strong>Situation:</strong> "${escapeHTML(item.scenario)}"</p>
           </div>
 
@@ -683,12 +778,13 @@ class KoshurGoApp {
                 <span class="choice-num">${idx + 1}</span>
                 <div class="choice-content">
                   <span class="choice-main">${escapeHTML(opt.roman)}</span>
+                  <small style="color:var(--pine-main);font-weight:700;">${escapeHTML(opt.dev)}</small>
                   <span class="choice-sub">${escapeHTML(opt.meaning)}</span>
                 </div>
               </button>
             `).join('')}
           </div>
-          <div class="action-footer">
+          <div class="action-footer" style="margin-top:20px;">
             <button type="button" id="btn-check-proverb-challenge" class="btn-duo btn-primary" disabled>Check Wisdom</button>
           </div>
         </div>
@@ -716,11 +812,11 @@ class KoshurGoApp {
       if (isCorrect) {
         window.koshurAudio.playVictory();
         window.koshurGamification.recordActivity(20);
-        alert('🎉 Perfect! You mastered this Kashmiri proverb! (+20 XP awarded)');
+        alert(`🎉 Shabash! Correct proverb:\n"${item.correctProverb}"\n${item.correctMeaning}\n(+20 XP awarded)`);
       } else {
         window.koshurAudio.playIncorrect();
         window.koshurGamification.deductHeart();
-        alert('❌ Not quite. The correct proverb matches the contextual situation!');
+        alert(`❌ Not quite! The matching proverb was:\n"${item.correctProverb}"\n${item.correctMeaning}`);
       }
       this.renderView('proverbs');
     });
